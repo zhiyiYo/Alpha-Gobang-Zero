@@ -15,7 +15,11 @@ class ChessBoard:
             (15, 15), int)*self.EMPTY if state_mat is None else state_mat
         # 计算可用区域
         rows, cols = np.where(self.__state_mat == self.EMPTY)
-        self.__available_poses = [(i, j) for i, j in zip(rows, cols)]
+        self.__updateAvailablePos()
+
+    @property
+    def state_mat(self):
+        return self.__state_mat
 
     def setBoard(self, state_mat: np.ndarray):
         """ 设置棋局
@@ -30,6 +34,7 @@ class ChessBoard:
     def clearBoard(self):
         """ 清空棋盘 """
         self.__state_mat = np.ones((15, 15), int)*self.EMPTY
+        self.__updateAvailablePos()
 
     def updateBoard(self, corordinate: tuple, color):
         """ 在棋盘上放置棋子，只允许在没有棋子的地方放置
@@ -97,6 +102,11 @@ class ChessBoard:
                     if np.all(self.__state_mat[row, col] == self.WHITE):
                         return True, self.WHITE
         return False, None
+
+    def __updateAvailablePos(self):
+        """ 更新当前可落子区域 """
+        rows, cols = np.where(self.__state_mat == self.EMPTY)
+        self.__available_poses = [(i, j) for i, j in zip(rows, cols)]
 
 
 class ColorError(ValueError):

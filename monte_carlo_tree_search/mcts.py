@@ -3,8 +3,6 @@ import random
 from math import log, sqrt
 from typing import List
 
-import numpy as np
-
 from .state import State
 
 
@@ -59,6 +57,11 @@ class MCTree:
         ----------
         iter_time: int
             迭代次数
+
+        Returns
+        -------
+        action_pos: tuple
+            落子位置
         """
         # 如果只剩下一个落子位置，就直接返回该位置
         if len(self.root.state.available_poses) == 1:
@@ -66,18 +69,24 @@ class MCTree:
 
         for i in range(iter_time):
             node = self.__select()
-            color = self.__simulation(node)
-            self.__back_propagation(node, color)
-        return self.__get_best_child()
+            color, is_win = self.__simulation(node.state)
+            self.__back_propagation(node, color, is_win)
+        return self.__get_best_child().state.action_pos
 
     def __select(self) -> Node:
         """ 选择一个子节点 """
         node = self.root
         while not node.state.is_game_over():
-            if node.is_full_expand():
-                node = self.__get_best_child()
+            if len(node.children) == 0:
+                return self.__expand(node)
+            # 有一定概率不拓展节点
+            elif random.uniform(0, 1) > 0.6:
+                self.__get_best_child()
             else:
-                return self.__expand()
+                if node.is_full_expand():
+                    node = self.__get_best_child()
+                else:
+                    return self.__expand(node)
         return node
 
     def __expand(self, node: Node):
@@ -89,17 +98,18 @@ class MCTree:
         node.add_child(state)
         return node.children[-1]
 
-    def __simulation(self, node: Node):
+    def __simulation(self, state: State):
         """ 随机模拟一局 """
-        while not node.state.is_game_over():
-            state = node.state.next_state()
-        return state.color
+        while not state.is_game_over():
+            state = state.next_state()
+        return state.color, state.is_win
 
-    def __back_propagation(self, node: Node, color: int):
+    def __back_propagation(self, node: Node, color: int, is_win):
         """ 反向传播 """
         while node.parent:
             node.visit_times += 1
-            node.win_times += int(color == node.state.color)
+            if is_win is not None:
+                node.win_times += int(color == node.state.color)
             node = node.parent
 
     def __get_best_child(self):
