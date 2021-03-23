@@ -15,23 +15,25 @@ class MainWindow(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.setFixedSize(540, 540)
-        self.chessBoard = ChessBoard()
+        self.board_len = 9
+        self.chessBoard = ChessBoard(self.board_len)
         self.aiThread = AIThread(self.chessBoard, ChessBoard.WHITE, self)
         self.chess_list = []
         self.isAllowPlayerPutChess = True
         self.isEnableAI = True
+        self.pre_white_chess = None
         # 初始化
         self.initWidget()
 
     def initWidget(self):
         """ 初始化窗口 """
+        self.setFixedSize(540, 540)
         self.setWindowTitle('BangGo')
         self.setWindowIcon(QIcon(r'app\resource\images\icon.jpeg'))
         # 设置背景图像
         palette = QPalette()
         palette.setBrush(self.backgroundRole(), QBrush(QPixmap(
-            r'app\resource\images\chessboard.jpg')))
+            r'app\resource\images\chessboard_1.png')))
         self.setPalette(palette)
         # 设置光标
         self.setCursor(QCursor(QPixmap(r'app\resource\images\black.png').scaled(
@@ -46,7 +48,7 @@ class MainWindow(QWidget):
             return
         self.isEnableAI = True
         # 计算棋子在矩阵上的坐标
-        cor = self.getChessCoordinate(e.pos())
+        cor = self.mapQPoint2MatIndex(e.pos())
         updateOK = self.putChess(cor, ChessBoard.BLACK)
         if updateOK and self.isEnableAI:
             self.stateTooltip = StateTooltip("AI 正在思考中", "客官请耐心等待哦~~", self)
@@ -55,14 +57,14 @@ class MainWindow(QWidget):
             self.isAllowPlayerPutChess = False
             self.aiThread.start()
 
-    def getChessCoordinate(self, pos: QPoint):
-        """ 计算棋子在矩阵上的坐标 """
-        poses = np.array([[QPoint(i, j)*36 + QPoint(23, 23) for j in range(15)]
-                          for i in range(15)])
+    def mapQPoint2MatIndex(self, pos: QPoint):
+        """ 将桌面坐标映射到矩阵下标 """
+        poses = np.array([[QPoint(i, j)*60 + QPoint(30, 30) for j in range(self.board_len)]
+                          for i in range(self.board_len)])
         # Qt坐标系与矩阵的相反
         distances = np.array([
             [(poses[i, j].x()-pos.x())**2 + (poses[i, j].y()-pos.y())**2
-             for j in range(15)] for i in range(15)
+             for j in range(self.board_len)] for i in range(self.board_len)
         ])
         col, row = np.where(distances == distances.min())
         return row[0], col[0]
@@ -73,7 +75,7 @@ class MainWindow(QWidget):
         Parameters
         ----------
         corordinate: tuple
-            棋子的坐标，范围为 `(0, 14) ~ (0, 14)`
+            棋子的坐标，范围为 `(0, board_len-1) ~ (0, board_len-1)`
 
         color: int
             棋子的颜色
@@ -87,22 +89,27 @@ class MainWindow(QWidget):
         row, col = corordinate
         updateOk = self.chessBoard.updateBoard(corordinate, color)
         if updateOk:
+            isWhite = color == ChessBoard.WHITE
             # 矩阵的 axis = 0 方向为 y 轴方向
-            chessPos = QPoint(col, row)*36 + QPoint(1, 2)
-            chess = Chess(color, self)
+            chessPos = QPoint(col, row) * 60 + QPoint(11, 13)
+            chess = Chess(color, self, isWhite)
             chess.show()
             chess.move(chessPos)
             self.chess_list.append(chess)
+            # 取消上一个白棋的提示状态
+            if self.pre_white_chess:
+                self.pre_white_chess.tipLabel.hide()
+            self.pre_white_chess = chess if isWhite else None
             # 检查游戏是否结束
             self.checkGameOver()
         return updateOk
 
-    def searchCompleteSlot(self, pos: tuple):
+    def searchCompleteSlot(self, action: int):
         """ AI 思考完成槽函数 """
         self.stateTooltip.setState(True)
+        pos = (action//self.board_len, action % self.board_len)
         self.putChess(pos, ChessBoard.WHITE)
         self.isAllowPlayerPutChess = True
-        print(pos)
 
     def checkGameOver(self):
         """ 检查游戏是否结束 """

@@ -11,9 +11,9 @@ class TestChessBoard(unittest.TestCase):
     def test_horizon(self):
         """ 测试水平方向 """
         px = [[0, 0, 0, 0, 0],
-              [14, 14, 14, 14, 14],
-              [14, 14, 14, 14, 14]]
-        py = [[14, 13, 12, 11, 10],
+              [8, 8, 8, 8, 8],
+              [8, 8, 8, 8, 8]]
+        py = [[8, 7, 6, 5, 4],
               [0, 1, 2, 3, 4],
               [0, 2, 3, 4, 5]]
         labels = [(True, ChessBoard.BLACK),
@@ -23,8 +23,8 @@ class TestChessBoard(unittest.TestCase):
     def test_vertical(self):
         """ 测试竖直方向 """
         px = [[0, 1, 2, 3, 4],
-              [14, 13, 12, 11, 10],
-              [14, 13, 12, 11, 9]]
+              [8, 7, 6, 5, 4],
+              [8, 7, 6, 5, 3]]
         py = [[0, 0, 0, 0, 0],
               [0, 0, 0, 0, 0],
               [0, 0, 0, 0, 0]]
@@ -35,13 +35,13 @@ class TestChessBoard(unittest.TestCase):
     def test_main_diagonal(self):
         """ 测试主对角线方向 """
         px = [[0, 1, 2, 3, 4],
-              [6, 7, 8, 9, 10],
-              [6, 7, 8, 9, 10],
-              [7, 8, 9, 10, 11]]
+              [4, 5, 6, 7, 8],
+              [4, 5, 6, 7, 8],
+              [1, 2, 3, 4, 5]]
         py = [[0, 1, 2, 3, 4],
               [0, 1, 2, 3, 4],
               [0, 1, 2, 3, 3],
-              [7, 8, 9, 10, 10]]
+              [1, 2, 3, 4, 4]]
         labels = [(True, ChessBoard.WHITE), (True, ChessBoard.WHITE),
                   (False, None), (False, None)]
         self.__simulation(px, py, labels, ChessBoard.WHITE)
@@ -49,11 +49,11 @@ class TestChessBoard(unittest.TestCase):
     def test_sub_diagonal(self):
         """ 测试副对角线方向 """
         px = [[0, 1, 2, 3, 4],
-              [6, 7, 8, 9, 10],
-              [6, 7, 8, 9, 10],
-              [11, 11, 12, 13, 14]]
+              [4, 5, 6, 7, 8],
+              [4, 5, 6, 7, 8],
+              [3, 3, 2, 1, 0]]
         py = [[4, 3, 2, 1, 0],
-              [14, 13, 12, 11, 10],
+              [8, 7, 6, 5, 4],
               [0, 1, 2, 3, 3],
               [0, 1, 2, 3, 4]]
         labels = [(True, ChessBoard.WHITE), (True, ChessBoard.WHITE),
@@ -62,7 +62,7 @@ class TestChessBoard(unittest.TestCase):
 
     def __simulation(self, px, py, labels, color):
         """ 测试结果 """
-        state_mats = [np.ones((15, 15), int) *
+        state_mats = [np.ones((9, 9), int) *
                       ChessBoard.EMPTY for i in range(len(px))]
         for x, y, state_mat in zip(px, py, state_mats):
             state_mat[x, y] = color

@@ -3,37 +3,43 @@ import numpy as np
 
 
 class ChessBoard:
-    """ 15 × 15 五子棋棋盘 """
+    """ 9 × 9 五子棋棋盘 """
 
     EMPTY = 0
-    BLACK = 1
-    WHITE = 2
+    BLACK = -1
+    WHITE = 1
 
-    def __init__(self, state_mat=None):
-        self.board_len = 15
-        self.__state_mat = np.ones(
-            (15, 15), int)*self.EMPTY if state_mat is None else state_mat
+    def __init__(self, board_len=9, state_mat=None, pre_action=None):
+        """
+        Parameters
+        ----------
+        board_len: int
+            棋盘边长
+
+        state_mat: `np.ndarray`
+            棋局
+
+        pre_action: int
+            上一步棋
+        """
+        self.board_len = board_len
+        self.pre_action = pre_action
+        if state_mat is not None:
+            self.__state_mat = state_mat
+        else:
+            self.__state_mat = np.ones(
+                (self.board_len, self.board_len))*self.EMPTY
         # 计算可用区域
-        rows, cols = np.where(self.__state_mat == self.EMPTY)
         self.__updateAvailablePos()
 
     @property
     def state_mat(self):
         return self.__state_mat
 
-    def setBoard(self, state_mat: np.ndarray):
-        """ 设置棋局
-
-        Parameters
-        ----------
-        state_mat: `np.ndarray` of shape (15, 15)
-            代表棋局的矩阵
-        """
-        self.__state_mat = state_mat.copy()
-
     def clearBoard(self):
         """ 清空棋盘 """
-        self.__state_mat = np.ones((15, 15), int)*self.EMPTY
+        self.__state_mat = np.ones(
+            (self.board_len, self.board_len), int)*self.EMPTY
         self.__updateAvailablePos()
 
     def updateBoard(self, corordinate: tuple, color):
@@ -56,8 +62,10 @@ class ChessBoard:
             raise ColorError()
         if corordinate not in self.__available_poses:
             return False
-        self.__state_mat[corordinate[0], corordinate[1]] = color
+        i, j = corordinate
+        self.__state_mat[i, j] = color
         self.__available_poses.remove(corordinate)
+        self.pre_action = i*self.board_len+j
         return True
 
     def isGameOver(self):

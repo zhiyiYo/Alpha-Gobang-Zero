@@ -6,7 +6,13 @@ from PyQt5.QtWidgets import QLabel
 
 class Chess(QLabel):
 
-    def __init__(self, color, parent=None):
+    def __init__(self, color, parent=None, needTips=True):
+        """
+        Parameters
+        ----------
+        color: int
+            棋子颜色，可以是 `ChessBoard.BLACK` 或 `ChessBoard.WHITE`
+         """
         super().__init__(parent=parent)
         self.__checkColor(color)
         self.color = color
@@ -15,6 +21,12 @@ class Chess(QLabel):
             ChessBoard.WHITE: 'app\\resource\\images\\white.png',
         }
         self.setPixmap(QPixmap(self.__imagePath_dict[self.color]))
+        if needTips:
+            self.tipLabel = QLabel(self)
+            self.tipLabel.setPixmap(QPixmap('app\\resource\\images\\气泡.png'))
+            self.tipLabel.move(20, 0)
+        else:
+            self.tipLabel = QLabel(self)
 
     def __checkColor(self, color):
         """ 检查颜色是否合法 """

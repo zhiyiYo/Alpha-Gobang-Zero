@@ -1,12 +1,12 @@
 # coding:utf-8
-from monte_carlo_tree_search import MCTree, Node, State
-from PyQt5.QtCore import QObject, pyqtSignal, QThread
+from monte_carlo_tree_search import MCTS, Node, State
+from PyQt5.QtCore import pyqtSignal, QThread
 
 
 class AIThread(QThread):
     """ AI """
 
-    searchComplete = pyqtSignal(tuple)
+    searchComplete = pyqtSignal(int)
 
     def __init__(self, chessBoard, color, parent=None):
         """
@@ -27,6 +27,8 @@ class AIThread(QThread):
 
     def run(self):
         """ 根据当前局面获取动作 """
-        tree = MCTree(Node(State(self.chessBoard.state_mat, self.color)))
-        pos = tree.search(50)
-        self.searchComplete.emit(pos)
+        state = State(self.chessBoard.state_mat, self.color,
+                      self.chessBoard.pre_action)
+        tree = MCTS(Node(state))
+        action = tree.search(400)
+        self.searchComplete.emit(action)

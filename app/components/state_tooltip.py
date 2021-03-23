@@ -58,7 +58,7 @@ class StateTooltip(QWidget):
 
     def __initWidget(self):
         """ 初始化小部件 """
-        self.setFixedSize(248, 60)
+        self.setFixedSize(241, 61)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_StyledBackground)
         self.rotateTimer.setInterval(50)
@@ -147,5 +147,5 @@ class StateTooltip(QWidget):
 
     def show(self):
         """ 重写show()函数 """
-        self.move(self.window().width() - self.width() - 22, 22)
+        self.move(self.window().width() - self.width() - 30, 30)
         super().show()
