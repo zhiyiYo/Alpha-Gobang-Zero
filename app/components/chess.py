@@ -1,5 +1,5 @@
 # coding:utf-8
-from app.common.chess_board import ChessBoard, ColorError
+from alphazero import ChessBoard, ColorError
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QLabel
 
@@ -31,4 +31,4 @@ class Chess(QLabel):
     def __checkColor(self, color):
         """ 检查颜色是否合法 """
         if color not in [ChessBoard.BLACK, ChessBoard.WHITE]:
-            raise ColorError()
+            raise ColorError("颜色只能是 `ChessBoard.BLACK` 或 `ChessBoard.WHITE`")

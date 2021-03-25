@@ -1,5 +1,8 @@
 # coding: utf-8
 from typing import Tuple
+from copy import deepcopy
+
+import torch
 
 
 class ChessBoard:
@@ -24,10 +27,15 @@ class ChessBoard:
         # 上一个落点
         self.previous_action = None
 
+    def copy(self):
+        """ 复制棋盘 """
+        return deepcopy(self)
+
     def clear_board(self):
         """ 清空棋盘 """
         self.state.clear()
         self.previous_action = None
+        self.current_player = self.BLACK
         self.available_actions = list(range(self.board_len**2))
 
     def do_action(self, action: int):
@@ -42,6 +50,25 @@ class ChessBoard:
         self.state[action] = self.current_player
         self.current_player *= -1
         self.available_actions.remove(action)
+
+    def do_action_(self, pos: tuple) -> bool:
+        """ 落子并更新棋盘，只提供给 app 使用
+
+        Parameters
+        ----------
+        pos: Tuple[int, int]
+            落子在棋盘上的位置，范围为 `(0, 0) ~ (board_len-1, board_len-1)`
+
+        Returns
+        -------
+        update_ok: bool
+            是否成功落子
+        """
+        action = pos[0]*self.board_len + pos[1]
+        if action in self.available_actions:
+            self.do_action(action)
+            return True
+        return False
 
     def is_game_over(self) -> Tuple[bool, int]:
         """ 判断游戏是否结束
@@ -85,3 +112,14 @@ class ChessBoard:
             return True, None
 
         return False, None
+
+    def get_state_feature_planes() -> torch.Tensor:
+        """ 棋盘状态特征张量，维度为 `(C, board_len, board_len)` """
+        # todo: 确定特征平面张量的组成
+        pass
+
+
+class ColorError(ValueError):
+
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)

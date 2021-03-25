@@ -1,5 +1,5 @@
 # coding:utf-8
-from monte_carlo_tree_search import MCTS, Node, State
+from alphazero.rollout_mcts import RolloutMCTS
 from PyQt5.QtCore import pyqtSignal, QThread
 
 
@@ -8,27 +8,21 @@ class AIThread(QThread):
 
     searchComplete = pyqtSignal(int)
 
-    def __init__(self, chessBoard, color, parent=None):
+    def __init__(self, chessBoard, c_puct=5, n_iters=2000, parent=None):
         """
         Parameters
         ----------
         board: ChessBoard
             棋盘
 
-        color: int
-            AI 所执棋子的颜色
-
         parent:
             父级
         """
         super().__init__(parent=parent)
         self.chessBoard = chessBoard
-        self.color = color
+        self.mcts = RolloutMCTS(c_puct=c_puct, n_iters=n_iters)
 
     def run(self):
         """ 根据当前局面获取动作 """
-        state = State(self.chessBoard.state_mat, self.color,
-                      self.chessBoard.pre_action)
-        tree = MCTS(Node(state))
-        action = tree.search(400)
+        action = self.mcts.get_action(self.chessBoard)
         self.searchComplete.emit(action)

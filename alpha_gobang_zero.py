@@ -6,6 +6,6 @@ from PyQt5.QtWidgets import QApplication
 from app.View.main_window import MainWindow
 
 app = QApplication(sys.argv)
-bang_go = MainWindow()
-bang_go.show()
+alpha_gobnag_zero = MainWindow(isHumanFirst=True)
+alpha_gobnag_zero.show()
 sys.exit(app.exec_())

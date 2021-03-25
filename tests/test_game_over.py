@@ -1,5 +1,5 @@
 import unittest
-from mcts.chess_board import ChessBoard
+from alphazero import ChessBoard
 
 
 class TestGameOver(unittest.TestCase):
