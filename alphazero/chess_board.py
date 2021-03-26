@@ -1,29 +1,37 @@
 # coding: utf-8
 from typing import Tuple
 from copy import deepcopy
+from collections import OrderedDict
 
 import torch
+import numpy as np
 
 
 class ChessBoard:
     """ 棋盘类 """
 
-    EMPTY = 0
-    WHITE = 1
-    BLACK = -1
+    BLACK = 1
+    WHITE = 0
+    EMPTY = -1
 
-    def __init__(self, board_len=9):
+    def __init__(self, board_len=9, n_feature_planes=9):
         """
         Parameters
         ----------
         board_len: int
             棋盘边长
+
+        n_feature_planes: int
+            特征平面的个数，必须为奇数
         """
+        if n_feature_planes % 2 == 0:
+            raise ValueError("特征平面的个数必须为奇数")
         self.board_len = board_len
         self.current_player = self.BLACK
+        self.n_feature_planes = n_feature_planes
         self.available_actions = list(range(self.board_len**2))
         # 棋盘状态字典，key 为 action，value 为 current_player
-        self.state = {}
+        self.state = OrderedDict()
         # 上一个落点
         self.previous_action = None
 
@@ -47,9 +55,9 @@ class ChessBoard:
             落子位置，范围为 `[0, board_len^2 -1]`
         """
         self.previous_action = action
-        self.state[action] = self.current_player
-        self.current_player *= -1
         self.available_actions.remove(action)
+        self.state[action] = self.current_player
+        self.current_player = self.WHITE + self.BLACK - self.current_player
 
     def do_action_(self, pos: tuple) -> bool:
         """ 落子并更新棋盘，只提供给 app 使用
@@ -113,10 +121,29 @@ class ChessBoard:
 
         return False, None
 
-    def get_state_feature_planes() -> torch.Tensor:
-        """ 棋盘状态特征张量，维度为 `(C, board_len, board_len)` """
-        # todo: 确定特征平面张量的组成
-        pass
+    def get_feature_planes(self) -> torch.Tensor:
+        """ 棋盘状态特征张量，维度为 `(9, board_len, board_len)`
+
+        Returns
+        -------
+        feature_planes: Tensor of shape (9, board_len, board_len)
+            特征平面图像
+        """
+        feature_planes = torch.zeros((9, self.board_len**2))
+        # 最后一张图像代表当前玩家颜色
+        feature_planes[-1] = self.current_player
+        # 添加历史信息
+        if self.state:
+            actions = np.array(list(self.state.keys()))[::-1]
+            players = np.array(list(self.state.values()))[::-1]
+            Xt = actions[players == self.current_player]
+            Yt = actions[players != self.current_player]
+            for i in range(4):
+                if i < len(Xt):
+                    feature_planes[2*i, Xt[i:]] = 1
+                if i < len(Yt):
+                    feature_planes[2*i+1, Yt[i:]] = 1
+        return feature_planes.view((9, self.board_len, self.board_len))
 
 
 class ColorError(ValueError):

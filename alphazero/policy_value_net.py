@@ -101,21 +101,23 @@ class ValueHead(nn.Module):
 class PolicyValueNet(nn.Module):
     """ 策略价值网络 """
 
-    def __init__(self, in_channels, board_len=9):
+    def __init__(self, board_len=9, n_feature_planes=9, is_use_gpu=True):
         """
         Parameters
         ----------
-        in_channels: int
-            输入图像通道数
-
         board_len: int
             棋盘大小
+
+        n_feature_planes: int
+            输入图像通道数，对应特征
         """
         super().__init__()
         self.board_len = board_len
-        self.in_channels = in_channels
+        self.is_use_gpu = is_use_gpu
+        self.n_feature_planes = n_feature_planes
+        self.device = torch.device('cuda:0' if is_use_gpu else 'cpu')
         self.conv = nn.Sequential(
-            nn.Conv2d(in_channels, 128, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(n_feature_planes, 128, kernel_size=3, padding=1),
             nn.BatchNorm2d(num_features=128),
             nn.ReLU()
         )
@@ -162,21 +164,24 @@ class PolicyValueNet(nn.Module):
         value: float
             当前局面的估值
         """
-        feature_planes = chess_board.get_state_feature_planes()
+        feature_planes = chess_board.get_feature_planes().to(self.device)
         feature_planes.unsqueeze_(0)
         p_hat, value = self(feature_planes)
         # 将对数概率转换为非对数概率
         p = torch.exp(p_hat).flatten()
         # 只取可行的落点
-        p = p[chess_board.available_actions].cpu().numpy()
+        if self.is_use_gpu:
+            p = p[chess_board.available_actions].cpu().detach().numpy()
+        else:
+            p = p[chess_board.available_actions].detach().numpy()
         return zip(chess_board.available_actions, p), value[0].item()
 
-    def get_action_probs_value_(self, batch_state_feature_planes):
+    def get_action_probs_value_(self, batch_feature_planes):
         """ 返回动作空间的所有动作对应的先验概率向量 `p` ，以及局面的 `value`
 
         Parameters
         ----------
-        batch_state_feature_planes: Tensor of shape (N, C, H, W)
+        batch_feature_planes: Tensor of shape (N, C, H, W)
             批量状态特征平面张量
 
         Returns
@@ -187,6 +192,6 @@ class PolicyValueNet(nn.Module):
         value: Tensor of shape (N, 1)
             当前局面的估值
         """
-        p_hat, value = self(batch_state_feature_planes)
+        p_hat, value = self(batch_feature_planes)
         p = torch.exp(p_hat)
         return p, value

@@ -26,7 +26,7 @@ class MainWindow(QWidget):
         super().__init__(parent=parent)
         self.boardLen = 9
         self.chessBoard = ChessBoard(self.boardLen)
-        self.aiThread = AIThread(self.chessBoard, 5, 1000, self)
+        self.aiThread = AIThread(self.chessBoard, 5, 100, self)
         self.chess_list = []
         self.isEnableAI = True
         self.previousAIChess = None

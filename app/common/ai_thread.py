@@ -1,6 +1,6 @@
 # coding:utf-8
-from alphazero.rollout_mcts import RolloutMCTS
-from PyQt5.QtCore import pyqtSignal, QThread
+from alphazero import AlphaZeroMCTS, PolicyValueNet, RolloutMCTS
+from PyQt5.QtCore import QThread, pyqtSignal
 
 
 class AIThread(QThread):
@@ -20,7 +20,9 @@ class AIThread(QThread):
         """
         super().__init__(parent=parent)
         self.chessBoard = chessBoard
-        self.mcts = RolloutMCTS(c_puct=c_puct, n_iters=n_iters)
+        self.policyValueNet = PolicyValueNet(9, 9)
+        # self.mcts = RolloutMCTS(c_puct=c_puct, n_iters=n_iters)
+        self.mcts = AlphaZeroMCTS(self.policyValueNet, n_iters=500)
 
     def run(self):
         """ 根据当前局面获取动作 """

@@ -39,7 +39,7 @@ class Node:
         child: Node
             子节点
         """
-        return max(self.children.items(), key=lambda item: item[1].score)
+        return max(self.children.items(), key=lambda item: item[1].get_score())
 
     def expand(self, action_probs: Iterable[Tuple[int, float]]):
         """ 拓展节点
@@ -54,7 +54,7 @@ class Node:
             self.children[action] = Node(prior_prob, self.c_puct, self)
 
     def __update(self, value: float):
-        """ 更新节点的访问次数 `N(s, a)`、节点的累计平均奖赏 `Q(s, a)` 、节点的 `U(s, a)` 和评分 `Score`
+        """ 更新节点的访问次数 `N(s, a)`、节点的累计平均奖赏 `Q(s, a)`
 
         Parameters
         ----------
@@ -63,15 +63,21 @@ class Node:
         """
         self.Q = (self.N * self.Q + value)/(self.N + 1)
         self.N += 1
-        self.U = self.c_puct*self.P * sqrt(self.parent.N)/(1 + self.N)
-        self.score = self.U + self.Q
 
     def backup(self, value: float):
         """ 反向传播 """
-        if self.parent:
-            # 每一层节点代表的玩家不同，所以需要将 value 取反
-            self.parent.backup(-value)
-            self.__update(value)
+        n = 0
+        node = self
+        while node.parent:
+            node.__update((-1)**n*value)
+            node = node.parent
+            n += 1
+
+    def get_score(self):
+        """ 计算节点得分 """
+        self.U = self.c_puct*self.P * sqrt(self.parent.N)/(1 + self.N)
+        self.score = self.U + self.Q
+        return self.score
 
     def is_leaf_node(self):
         """ 是否为叶节点 """
