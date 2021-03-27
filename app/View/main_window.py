@@ -13,27 +13,37 @@ from PyQt5.QtWidgets import QWidget, qApp
 class MainWindow(QWidget):
     """ 主界面 """
 
-    def __init__(self, isHumanFirst=True, parent=None):
+    def __init__(self, c_puct=5, n_mcts_iters=1500, is_human_first=True, is_use_gpu=True, parent=None):
         """
         Parameters
         ----------
-        isHumanFirst: bool
+        c_puct: float
+            探索常数
+
+        n_mcts_iters: int
+            蒙特卡洛树搜索次数
+
+        is_human_first: bool
             是否人类先手
+
+        is_use_gpu: bool
+            是否使用 GPU
 
         parent:
             父级窗口
         """
         super().__init__(parent=parent)
         self.boardLen = 9
-        self.chessBoard = ChessBoard(self.boardLen)
-        self.aiThread = AIThread(self.chessBoard, 5, 100, self)
         self.chess_list = []
         self.isEnableAI = True
-        self.previousAIChess = None
-        self.isHumanFirst = isHumanFirst
+        self.isUseGPU = is_use_gpu
         self.isAllowHumanAct = True
-        self.humanColor = ChessBoard.BLACK if isHumanFirst else ChessBoard.WHITE
-        self.AIColor = ChessBoard.BLACK if not isHumanFirst else ChessBoard.WHITE
+        self.previousAIChess = None
+        self.isHumanFirst = is_human_first
+        self.chessBoard = ChessBoard(self.boardLen,9)
+        self.aiThread = AIThread(self.chessBoard, c_puct, n_mcts_iters, is_use_gpu, self)
+        self.humanColor = ChessBoard.BLACK if is_human_first else ChessBoard.WHITE
+        self.AIColor = ChessBoard.BLACK if not is_human_first else ChessBoard.WHITE
         # 初始化
         self.initWidget()
 
@@ -41,7 +51,7 @@ class MainWindow(QWidget):
         """ 初始化窗口 """
         self.setFixedSize(540, 540)
         self.setWindowTitle('Alpha Gobang Zero')
-        self.setWindowIcon(QIcon(r'app\resource\images\icon.jpeg'))
+        self.setWindowIcon(QIcon(r'app\resource\images\icon\二哈.jpg'))
         # 设置背景图像
         palette = QPalette()
         palette.setBrush(self.backgroundRole(), QBrush(QPixmap(

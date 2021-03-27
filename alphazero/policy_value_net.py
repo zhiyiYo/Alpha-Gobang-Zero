@@ -6,6 +6,19 @@ from torch.nn import functional as F
 from .chess_board import ChessBoard
 
 
+class ConvBlock(nn.Module):
+    """ 卷积块 """
+
+    def __init__(self, in_channels: int, out_channel: int, kernel_size, padding=0):
+        super().__init__()
+        self.conv = nn.Conv2d(in_channels, out_channel,
+                              kernel_size=kernel_size, padding=padding)
+        self.batch_norm = nn.BatchNorm2d(out_channel)
+
+    def forward(self, x):
+        return F.relu(self.batch_norm(self.conv(x)))
+
+
 class ResidueBlock(nn.Module):
     """ 残差块 """
 
@@ -51,11 +64,7 @@ class PolicyHead(nn.Module):
         super().__init__()
         self.board_len = board_len
         self.in_channels = in_channels
-        self.conv = nn.Sequential(
-            nn.Conv2d(in_channels, 2, 1, stride=1),
-            nn.BatchNorm2d(num_features=2),
-            nn.ReLU()
-        )
+        self.conv = ConvBlock(in_channels, 2, 1)
         self.fc = nn.Linear(2*board_len**2, board_len**2)
 
     def forward(self, x):
@@ -80,11 +89,7 @@ class ValueHead(nn.Module):
         super().__init__()
         self.in_channels = in_channels
         self.board_len = board_len
-        self.conv = nn.Sequential(
-            nn.Conv2d(in_channels, 1, kernel_size=1, stride=1),
-            nn.BatchNorm2d(num_features=1),
-            nn.ReLU()
-        )
+        self.conv = ConvBlock(in_channels, 1, kernel_size=1)
         self.fc = nn.Sequential(
             nn.Linear(board_len**2, 128),
             nn.ReLU(),
@@ -101,7 +106,7 @@ class ValueHead(nn.Module):
 class PolicyValueNet(nn.Module):
     """ 策略价值网络 """
 
-    def __init__(self, board_len=9, n_feature_planes=9, is_use_gpu=True):
+    def __init__(self, board_len=9, n_feature_planes=7, is_use_gpu=True):
         """
         Parameters
         ----------
@@ -117,12 +122,10 @@ class PolicyValueNet(nn.Module):
         self.n_feature_planes = n_feature_planes
         self.device = torch.device('cuda:0' if is_use_gpu else 'cpu')
         self.conv = nn.Sequential(
-            nn.Conv2d(n_feature_planes, 128, kernel_size=3, padding=1),
-            nn.BatchNorm2d(num_features=128),
-            nn.ReLU()
+            ConvBlock(n_feature_planes, 32, kernel_size=3, padding=1),
+            ConvBlock(32, 64, kernel_size=3, padding=1),
+            ConvBlock(64, 128, kernel_size=3, padding=1),
         )
-        self.residues = nn.Sequential(
-            *[ResidueBlock(128, 128) for i in range(5)])
         self.policy_head = PolicyHead(128, board_len)
         self.value_head = ValueHead(128, board_len)
 
@@ -143,7 +146,6 @@ class PolicyValueNet(nn.Module):
             当前局面的估值
         """
         x = self.conv(x)
-        x = self.residues(x)
         p_hat = self.policy_head(x)
         value = self.value_head(x)
         return p_hat, value
@@ -176,22 +178,7 @@ class PolicyValueNet(nn.Module):
             p = p[chess_board.available_actions].detach().numpy()
         return zip(chess_board.available_actions, p), value[0].item()
 
-    def get_action_probs_value_(self, batch_feature_planes):
-        """ 返回动作空间的所有动作对应的先验概率向量 `p` ，以及局面的 `value`
-
-        Parameters
-        ----------
-        batch_feature_planes: Tensor of shape (N, C, H, W)
-            批量状态特征平面张量
-
-        Returns
-        -------
-        p: Tensor of shape (N, board_len^2)
-            先验概率向量 `p`
-
-        value: Tensor of shape (N, 1)
-            当前局面的估值
-        """
-        p_hat, value = self(batch_feature_planes)
-        p = torch.exp(p_hat)
-        return p, value
+    def set_device(self, is_use_gpu: bool):
+        """ 设置神经网络运行设备 """
+        self.is_use_gpu = is_use_gpu
+        self.device = torch.device('cuda:0' if is_use_gpu else 'cpu')

@@ -6,7 +6,7 @@ import torch
 from torch import Tensor, from_numpy
 from torch.utils.data import Dataset
 
-from .config import train_config
+from config.config import train_config
 
 SelfPlayData = namedtuple(
     'SelfPlayData', ['pi_list', 'z_list', 'feature_planes_list'])

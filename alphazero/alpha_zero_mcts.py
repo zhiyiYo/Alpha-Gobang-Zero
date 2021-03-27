@@ -11,7 +11,7 @@ from .policy_value_net import PolicyValueNet
 class AlphaZeroMCTS:
     """ 基于策略-价值网络的蒙特卡洛搜索树 """
 
-    def __init__(self, policy_value_net: PolicyValueNet, c_puct: float = 6, n_iters=1600, is_self_play=False) -> None:
+    def __init__(self, policy_value_net: PolicyValueNet, c_puct: float = 4, n_iters=1200, is_self_play=False) -> None:
         """
         Parameters
         ----------
@@ -101,9 +101,13 @@ class AlphaZeroMCTS:
         pi = x/x.sum()
         # 添加狄利克雷噪声
         if self.is_self_play:
-            pi = 0.75*pi + 0.25*np.random.dirichlet(0.03*np.ones(len(pi)))
+            pi = 0.75*pi + 0.25*np.random.dirichlet(0.1*np.ones(len(pi)))
         return pi
 
     def reset_root(self):
         """ 重置根节点 """
         self.root = Node(prior_prob=1, parent=None)
+
+    def set_self_play(self, is_self_play: bool):
+        """ 设置蒙特卡洛树的自我博弈状态 """
+        self.is_self_play = is_self_play

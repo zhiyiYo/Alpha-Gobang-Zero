@@ -14,7 +14,7 @@ class ChessBoard:
     WHITE = 0
     EMPTY = -1
 
-    def __init__(self, board_len=9, n_feature_planes=9):
+    def __init__(self, board_len=9, n_feature_planes=7):
         """
         Parameters
         ----------
@@ -96,24 +96,24 @@ class ChessBoard:
             return False, None
 
         n = self.board_len
-        for action, player in self.state.items():
-            row, col = action//n, action % n
+        act = self.previous_action
+        player = self.state[act]
 
-            # 水平搜索
-            if col <= n-5 and len(set(self.state.get(i, self.EMPTY) for i in range(action, action+5))) == 1:
-                return True, player
+        # 水平搜索
+        if self.__has_five(act, act+5) or self.__has_five(act-4, act+1):
+            return True, player
 
-            # 竖直搜索
-            if row <= n-5 and len(set(self.state.get(i, self.EMPTY) for i in range(action, action+5*n, n))) == 1:
-                return True, player
+        # 竖直搜索
+        if self.__has_five(act, act+5*n, n) or self.__has_five(act-4*n, act+n, n):
+            return True, player
 
-            # 主对角线方向搜索
-            if row <= n-5 and col <= n-5 and len(set(self.state.get(i, self.EMPTY) for i in range(action, action+5*(n+1), n+1))) == 1:
-                return True, player
+        # 主对角线方向搜索
+        if self.__has_five(act, act+5*(n+1), n+1) or self.__has_five(act-4*(n+1), act+n+1, n+1):
+            return True, player
 
-            # 副对角线方向搜索
-            if row <= n-5 and col >= 4 and len(set(self.state.get(i, self.EMPTY) for i in range(action, action+5*(n-1), n-1))) == 1:
-                return True, player
+        # 副对角线方向搜索
+        if self.__has_five(act, act+5*(n-1), n-1) or self.__has_five(act-4*(n-1), act+n-1, n-1):
+            return True, player
 
         # 平局
         if not self.available_actions:
@@ -121,15 +121,20 @@ class ChessBoard:
 
         return False, None
 
+    def __has_five(self, start, end, step=1):
+        """ 判断指定区域的棋子颜色是否相同 """
+        return len(set(self.state.get(i, self.EMPTY) for i in range(start, end, step))) == 1
+
     def get_feature_planes(self) -> torch.Tensor:
-        """ 棋盘状态特征张量，维度为 `(9, board_len, board_len)`
+        """ 棋盘状态特征张量，维度为 `(n_feature_planes, board_len, board_len)`
 
         Returns
         -------
-        feature_planes: Tensor of shape (9, board_len, board_len)
+        feature_planes: Tensor of shape (n_feature_planes, board_len, board_len)
             特征平面图像
         """
-        feature_planes = torch.zeros((9, self.board_len**2))
+        feature_planes = torch.zeros(
+            (self.n_feature_planes, self.board_len**2))
         # 最后一张图像代表当前玩家颜色
         feature_planes[-1] = self.current_player
         # 添加历史信息
@@ -138,12 +143,13 @@ class ChessBoard:
             players = np.array(list(self.state.values()))[::-1]
             Xt = actions[players == self.current_player]
             Yt = actions[players != self.current_player]
-            for i in range(4):
+            for i in range((self.n_feature_planes-1)//2):
                 if i < len(Xt):
                     feature_planes[2*i, Xt[i:]] = 1
                 if i < len(Yt):
                     feature_planes[2*i+1, Yt[i:]] = 1
-        return feature_planes.view((9, self.board_len, self.board_len))
+
+        return feature_planes.view(self.n_feature_planes, self.board_len, self.board_len)
 
 
 class ColorError(ValueError):
