@@ -13,10 +13,13 @@ from PyQt5.QtWidgets import QWidget, qApp
 class MainWindow(QWidget):
     """ 主界面 """
 
-    def __init__(self, c_puct=5, n_mcts_iters=1500, is_human_first=True, is_use_gpu=True, parent=None):
+    def __init__(self, model, c_puct=5, n_mcts_iters=1500, is_human_first=True, is_use_gpu=True, parent=None):
         """
         Parameters
         ----------
+        model: str
+            模型路径
+
         c_puct: float
             探索常数
 
@@ -40,9 +43,9 @@ class MainWindow(QWidget):
         self.isAllowHumanAct = True
         self.previousAIChess = None
         self.isHumanFirst = is_human_first
-        self.chessBoard = ChessBoard(self.boardLen, n_feature_planes=7)
+        self.chessBoard = ChessBoard(self.boardLen, 5)
         self.aiThread = AIThread(
-            self.chessBoard, c_puct, n_mcts_iters, is_use_gpu, self)
+            self.chessBoard, model, c_puct, n_mcts_iters, is_use_gpu, self)
         self.humanColor = ChessBoard.BLACK if is_human_first else ChessBoard.WHITE
         self.AIColor = ChessBoard.BLACK if not is_human_first else ChessBoard.WHITE
         # 初始化

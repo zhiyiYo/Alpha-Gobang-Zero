@@ -66,12 +66,9 @@ class Node:
 
     def backup(self, value: float):
         """ 反向传播 """
-        n = 0
-        node = self
-        while node.parent:
-            node.__update((-1)**n*value)
-            node = node.parent
-            n += 1
+        if self.parent:
+            self.parent.backup(-value)
+        self.__update(value)
 
     def get_score(self):
         """ 计算节点得分 """

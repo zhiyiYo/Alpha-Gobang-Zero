@@ -7,7 +7,7 @@ train_config = {
     'batch_size': 10,
     'is_use_gpu': True,
     'n_test_games': 10,
-    'n_mcts_iters': 800,
+    'n_mcts_iters': 600,
     'n_self_plays': 1500,
     "check_frequency": 100,
 }
@@ -15,8 +15,9 @@ train_config = {
 
 # 游戏设置
 game_config = {
-    'c_puct': 5,
+    'c_puct': 4,
     'is_use_gpu': True,
-    'n_mcts_iters': 2000,
+    'n_mcts_iters': 1500,
     'is_human_first': True,
+    'model': 'model\\best_policy_value_net.pth'
 }

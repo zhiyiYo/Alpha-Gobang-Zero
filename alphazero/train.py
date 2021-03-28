@@ -1,9 +1,10 @@
 # coding:utf-8
+import json
 import os
 import time
-import json
 
 import torch
+import torch.nn.functional as F
 from torch import nn, optim
 from torch.optim.lr_scheduler import MultiStepLR
 from torch.utils.data import DataLoader
@@ -25,7 +26,7 @@ def save_model(train_func):
                               time.localtime(time.time()))
             path = f'model\\last_policy_value_net_{t}.pth'
             torch.save(train_pipe_line.policy_value_net, path)
-            print(f'🥇 训练结束，已将当前模型保存到 {os.path.join(os.getcwd(), path)}')
+            print(f'🎉 训练结束，已将当前模型保存到 {os.path.join(os.getcwd(), path)}')
             # 保存数据
             train_pipe_line.writer.close()
             with open('log\\train_losses.json',  'w', encoding='utf-8') as f:
@@ -56,7 +57,7 @@ class PolicyValueLoss(nn.Module):
         z: Tensor of shape (N, n_actions)
             最终的游戏结果相对每一个玩家的奖赏
         """
-        value_loss = torch.mean((z - value.repeat(1, z.size(1)))**2)
+        value_loss = F.mse_loss(value.repeat(1, z.size(1)), z)
         policy_loss = -torch.sum(pi*p_hat, dim=1).mean()
         loss = value_loss + policy_loss
         return loss
@@ -123,7 +124,7 @@ class TrainPipeLine:
         self_play_data: namedtuple
             自我博弈数据，有以下三个成员:
             * `pi_list`: 蒙特卡洛树搜索产生的动作概率向量 π 组成的列表
-            * `z_list`: 一局之中每个动作的玩家相对最后的游戏结果的奖赏列表
+            * `z`: 一局之中每个动作的玩家相对最后的游戏结果的奖赏列表
             * `feature_planes_list`: 一局之中每个动作对应的特征平面组成的列表
         """
         # 初始化棋盘和数据容器
@@ -142,16 +143,16 @@ class TrainPipeLine:
             is_over, winner = self.chess_board.is_game_over()
             if is_over:
                 if winner is not None:
-                    z_list = [1 if i == winner else -1 for i in players]
+                    z = [1 if i == winner else -1 for i in players]
                 else:
-                    z_list = [0]*len(players)
+                    z = [0]*len(players)
                 break
 
         # 重置根节点
         self.mcts.reset_root()
 
         # 返回数据
-        self_play_data = SelfPlayData(pi_list, z_list, feature_planes_list)
+        self_play_data = SelfPlayData(feature_planes_list, pi_list, z)
         return self_play_data
 
     @save_model
@@ -185,15 +186,16 @@ class TrainPipeLine:
                     # 学习率退火
                     self.lr_scheduler.step()
 
+                # 记录误差
                 self.train_losses.append(loss.item())
                 self.writer.add_scalar('Loss', loss.item(), i)
-                print(f"🚩 train_loss = {loss.item():<10.5f}")
+                print(f"🚩 train_loss = {loss.item():<10.5f}\n")
                 # 清空数据集
                 self.dataset.clear()
-                print('\n')
 
             # 测试模型
-            if i % self.check_frequency == 0 and i > 0:
+            if (i+1) % self.check_frequency == 0:
+                self.policy_value_net.eval()
                 self.__test_model()
 
     def __test_model(self):
@@ -231,7 +233,7 @@ class TrainPipeLine:
         win_prob = n_wins/self.n_test_games
         if win_prob > 0.55:
             torch.save(self.mcts.policy_value_net, model_path)
-            print(f'🎉 保存当前模型为最优模型，当前模型胜率为：{win_prob:.1%}\n')
+            print(f'🥇 保存当前模型为最优模型，当前模型胜率为：{win_prob:.1%}\n')
         else:
             print(f'🎃 保持历史最优模型不变，当前模型胜率为：{win_prob:.1%}\n')
         self.mcts.set_self_play(True)
@@ -266,4 +268,6 @@ class TrainPipeLine:
         if os.path.exists(path):
             with open(path, encoding='utf-8') as f:
                 train_losses = json.load(f)
+        else:
+            os.makedirs('log', exist_ok=True)
         return train_losses

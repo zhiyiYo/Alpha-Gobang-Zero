@@ -90,18 +90,18 @@ class AlphaZeroMCTS:
             self.root.parent = None
             return action, pi
         else:
-            self.root = Node(1)
+            self.reset_root()
             return action
 
     def __getPi(self, visits, T) -> np.ndarray:
         """ 根据节点的访问次数计算 π """
         # pi = visits**(1/T) / np.sum(visits**(1/T)) 会出现标量溢出问题，所以使用对数压缩
-        x = 1.0/T * np.log(visits + 1e-11)
+        x = 1/T * np.log(visits + 1e-11)
         x = np.exp(x - x.max())
         pi = x/x.sum()
         # 添加狄利克雷噪声
         if self.is_self_play:
-            pi = 0.75*pi + 0.25*np.random.dirichlet(0.1*np.ones(len(pi)))
+            pi = 0.75*pi + 0.25*np.random.dirichlet(0.03*np.ones(len(pi)))
         return pi
 
     def reset_root(self):

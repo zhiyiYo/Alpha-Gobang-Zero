@@ -9,12 +9,15 @@ class AIThread(QThread):
 
     searchComplete = pyqtSignal(int)
 
-    def __init__(self, chessBoard, c_puct=5, n_iters=2000, isUseGPU=True, parent=None):
+    def __init__(self, chessBoard, model: str, c_puct=5, n_iters=2000, isUseGPU=True, parent=None):
         """
         Parameters
         ----------
         board: ChessBoard
             棋盘
+
+        model: str
+            模型路径
 
         c_puct: float
             探索常数
@@ -31,8 +34,8 @@ class AIThread(QThread):
         super().__init__(parent=parent)
         self.chessBoard = chessBoard
         self.device = torch.device('cuda:0' if isUseGPU else 'cpu')
-        self.policyValueNet = torch.load(
-            'model\\best_policy_value_net.pth').to(self.device)  # type:PolicyValueNet
+        self.policyValueNet = torch.load(model).to(
+            self.device)  # type:PolicyValueNet
         self.policyValueNet.set_device(is_use_gpu=isUseGPU)
         self.mcts = AlphaZeroMCTS(
             self.policyValueNet, c_puct=c_puct, n_iters=n_iters)

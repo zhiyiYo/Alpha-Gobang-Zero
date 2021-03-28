@@ -2,7 +2,7 @@
 from app.components.three_state_button import ThreeStateButton
 from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QPainter, QPixmap
-from PyQt5.QtWidgets import QLabel, QWidget
+from PyQt5.QtWidgets import QLabel, QWidget, QGraphicsDropShadowEffect
 
 
 class StateTooltip(QWidget):
@@ -81,6 +81,7 @@ class StateTooltip(QWidget):
         self.titleLabel.move(39, 11)
         self.contentLabel.move(15, 34)
         self.closeButton.move(self.width() - 29, 23)
+        self.__setShadowEffect()
 
     def __setQss(self):
         """ 设置层叠样式 """
@@ -149,3 +150,10 @@ class StateTooltip(QWidget):
         """ 重写show()函数 """
         self.move(self.window().width() - self.width() - 30, 30)
         super().show()
+
+    def __setShadowEffect(self):
+        """ 添加阴影 """
+        self.shadowEffect = QGraphicsDropShadowEffect(self)
+        self.shadowEffect.setBlurRadius(50)
+        self.shadowEffect.setOffset(0, 5)
+        self.setGraphicsEffect(self.shadowEffect)
