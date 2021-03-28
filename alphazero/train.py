@@ -23,7 +23,7 @@ def save_model(train_func):
         except:
             t = time.strftime('%Y-%m-%d_%H-%M-%S',
                               time.localtime(time.time()))
-            path = f'model\\policy_value_net_{t}.pth'
+            path = f'model\\last_policy_value_net_{t}.pth'
             torch.save(train_pipe_line.policy_value_net, path)
             print(f'🥇 训练结束，已将当前模型保存到 {os.path.join(os.getcwd(), path)}')
             # 保存数据
@@ -245,9 +245,14 @@ class TrainPipeLine:
 
     def __get_policy_value_net(self):
         """ 创建策略-价值网络，如果存在历史最优模型则直接载入最优模型 """
-        model = 'model\\best_policy_value_net.pth'
+        best_model = 'best_policy_value_net.pth'
+        history_models = sorted(
+            [i for i in os.listdir('model') if i.startswith('last')])
+        # 从历史模型中选取最新模型
+        model = history_models[-1] if history_models else best_model
+        model = f'model\\{model}'
         if os.path.exists(model):
-            print('💎 载入历史最优模型...\n')
+            print(f'💎 载入模型 {model} ...\n')
             net = torch.load(model).to(self.device)  # type:PolicyValueNet
             net.set_device(self.is_use_gpu)
         else:

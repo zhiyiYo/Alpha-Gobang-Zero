@@ -40,8 +40,9 @@ class MainWindow(QWidget):
         self.isAllowHumanAct = True
         self.previousAIChess = None
         self.isHumanFirst = is_human_first
-        self.chessBoard = ChessBoard(self.boardLen,9)
-        self.aiThread = AIThread(self.chessBoard, c_puct, n_mcts_iters, is_use_gpu, self)
+        self.chessBoard = ChessBoard(self.boardLen, n_feature_planes=7)
+        self.aiThread = AIThread(
+            self.chessBoard, c_puct, n_mcts_iters, is_use_gpu, self)
         self.humanColor = ChessBoard.BLACK if is_human_first else ChessBoard.WHITE
         self.AIColor = ChessBoard.BLACK if not is_human_first else ChessBoard.WHITE
         # 初始化
@@ -151,9 +152,9 @@ class MainWindow(QWidget):
         if not isOver:
             self.isEnableAI = True  # 解锁
             return
-        if winner == ChessBoard.BLACK:
+        if winner == self.humanColor:
             msg = '恭喜客官赢得比赛，AI 表示不服，要不再战一局?'
-        elif winner == ChessBoard.WHITE:
+        elif winner == self.AIColor:
             msg = '客官别气馁，可以再试一次哦~~'
         else:
             msg = '平局！果然棋盘太小，施展不开，要不再战一局？'
@@ -168,6 +169,7 @@ class MainWindow(QWidget):
         for chess in self.chess_list:
             chess.deleteLater()
         self.chess_list.clear()
+        self.previousAIChess = None
 
     def exitGame(self):
         """ 退出游戏 """

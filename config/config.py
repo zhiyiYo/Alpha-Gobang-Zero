@@ -17,6 +17,6 @@ train_config = {
 game_config = {
     'c_puct': 5,
     'is_use_gpu': True,
-    'n_mcts_iters': 1500,
+    'n_mcts_iters': 2000,
     'is_human_first': True,
 }

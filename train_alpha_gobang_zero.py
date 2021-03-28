@@ -1,6 +1,3 @@
-import numpy as np
-import torch
-
 from config.config import train_config
 from alphazero.train import TrainPipeLine
 

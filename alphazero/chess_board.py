@@ -98,22 +98,31 @@ class ChessBoard:
         n = self.board_len
         act = self.previous_action
         player = self.state[act]
+        row, col = act//n, act % n
 
-        # 水平搜索
-        if self.__has_five(act, act+5) or self.__has_five(act-4, act+1):
-            return True, player
+        # 搜索方向
+        directions = [[(0, -1),  (0, 1)],   # 水平搜索
+                      [(-1, 0),  (1, 0)],   # 竖直搜索
+                      [(-1, -1), (1, 1)],   # 主对角线搜索
+                      [(1, -1),  (-1, 1)]]  # 副对角线搜索
 
-        # 竖直搜索
-        if self.__has_five(act, act+5*n, n) or self.__has_five(act-4*n, act+n, n):
-            return True, player
+        for i in range(4):
+            count = 1
 
-        # 主对角线方向搜索
-        if self.__has_five(act, act+5*(n+1), n+1) or self.__has_five(act-4*(n+1), act+n+1, n+1):
-            return True, player
-
-        # 副对角线方向搜索
-        if self.__has_five(act, act+5*(n-1), n-1) or self.__has_five(act-4*(n-1), act+n-1, n-1):
-            return True, player
+            for j in range(2):
+                flag = True
+                row_t, col_t = row, col
+                while flag:
+                    row_t = row_t + directions[i][j][0]
+                    col_t = col_t + directions[i][j][1]
+                    if 0 <= row_t < n and 0 <= col_t < n and self.state.get(row_t*n+col_t, self.EMPTY) == player:
+                        # 遇到相同颜色时 count+1
+                        count += 1
+                    else:
+                        flag = False
+            # 分出胜负
+            if count >= 5:
+                return True, player
 
         # 平局
         if not self.available_actions:

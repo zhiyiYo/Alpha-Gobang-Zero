@@ -14,7 +14,13 @@
 
 3. 根据电脑是否装有 `NVIDIA` 显卡，设置 `~config.config` 中 `is_use_gpu` 的值；
 
-4. 开始游戏:
+4. 训练模型:
+
+    ```shell
+    python train_alpha_gobang_zero.py
+    ```
+
+5. 开始游戏:
 
     ```shell
     python alpha_gobang_zero.py
