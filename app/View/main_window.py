@@ -43,7 +43,7 @@ class MainWindow(QWidget):
         self.isAllowHumanAct = True
         self.previousAIChess = None
         self.isHumanFirst = is_human_first
-        self.chessBoard = ChessBoard(self.boardLen, 5)
+        self.chessBoard = ChessBoard(self.boardLen, 7)
         self.aiThread = AIThread(
             self.chessBoard, model, c_puct, n_mcts_iters, is_use_gpu, self)
         self.humanColor = ChessBoard.BLACK if is_human_first else ChessBoard.WHITE
@@ -59,7 +59,7 @@ class MainWindow(QWidget):
         # 设置背景图像
         palette = QPalette()
         palette.setBrush(self.backgroundRole(), QBrush(QPixmap(
-            r'app\resource\images\chessboard_1.png')))
+            r'app\resource\images\chessboard.png')))
         self.setPalette(palette)
         # 设置光标
         color = 'black' if self.isHumanFirst else 'white'
@@ -95,13 +95,10 @@ class MainWindow(QWidget):
     def mapQPoint2MatIndex(self, pos: QPoint):
         """ 将桌面坐标映射到矩阵下标 """
         n = self.boardLen
-        poses = np.array([[QPoint(i, j)*60 + QPoint(30, 30) for j in range(n)]
-                          for i in range(n)])
+        poses = np.array([[[i*60+30, j*60+30] for j in range(n)]
+                         for i in range(n)])
         # Qt坐标系与矩阵的相反
-        distances = np.array([
-            [(poses[i, j].x()-pos.x())**2 + (poses[i, j].y()-pos.y())**2
-             for j in range(n)] for i in range(n)
-        ])
+        distances = (poses[:, :, 0]-pos.x())**2+(poses[:, :, 1]-pos.y())**2
         col, row = np.where(distances == distances.min())
         return row[0], col[0]
 
@@ -125,17 +122,17 @@ class MainWindow(QWidget):
         row, col = pos
         updateOk = self.chessBoard.do_action_(pos)
         if updateOk:
-            is_ai_chess = color != self.humanColor
+            isAIChess = color != self.humanColor
             # 矩阵的 axis = 0 方向为 y 轴方向
             chessPos = QPoint(col, row) * 60 + QPoint(11, 13)
-            chess = Chess(color, self, is_ai_chess)
+            chess = Chess(color, self, isAIChess)
             chess.show()
             chess.move(chessPos)
             self.chess_list.append(chess)
             # 取消上一个白棋的提示状态
             if self.previousAIChess:
                 self.previousAIChess.tipLabel.hide()
-            self.previousAIChess = chess if is_ai_chess else None
+            self.previousAIChess = chess if isAIChess else None
             # 检查游戏是否结束
             self.checkGameOver()
         return updateOk
@@ -162,7 +159,7 @@ class MainWindow(QWidget):
         else:
             msg = '平局！果然棋盘太小，施展不开，要不再战一局？'
         continueGameDiaglog = ContinueGameDialog('游戏结束', msg, self)
-        continueGameDiaglog.exitGameSignal.connect(qApp.exit)
+        continueGameDiaglog.exitGameSignal.connect(self.exitGame)
         continueGameDiaglog.continueGameSignal.connect(self.restartGame)
         continueGameDiaglog.exec_()
 

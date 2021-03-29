@@ -46,8 +46,8 @@ class AlphaZeroMCTS:
         action: int
             当前局面下的最佳动作
 
-        pi: `np.ndarray` of shape (board_len^2, )
-            执行动作空间中每个的概率，只在 `is_self_play=True` 模式下返回
+        pi: `np.ndarray` of shape `(board_len^2, )`
+            执行动作空间中每个动作的概率，只在 `is_self_play=True` 模式下返回
         """
         for i in range(self.n_iters):
             # 拷贝棋盘
@@ -61,10 +61,13 @@ class AlphaZeroMCTS:
 
             # 判断游戏是否结束，如果没结束就拓展叶节点
             is_over, winner = board.is_game_over()
-            action_probs, value = self.policy_value_net.get_action_probs_value(
-                board)
+            p, value = self.policy_value_net.predict(board)
             if not is_over:
-                node.expand(action_probs)
+                # 添加狄利克雷噪声
+                if self.is_self_play:
+                    p = 0.75*p + 0.25 * \
+                        np.random.dirichlet(0.03*np.ones(len(p)))
+                node.expand(zip(board.available_actions, p))
             elif winner is not None:
                 value = 1 if winner == board.current_player else -1
             else:
@@ -77,7 +80,7 @@ class AlphaZeroMCTS:
         visits = np.array([i.N for i in self.root.children.values()])
         pi_ = self.__getPi(visits, T)
 
-        # 根据 pi 选出动作及其对应节点
+        # 根据 π 选出动作及其对应节点
         actions = list(self.root.children.keys())
         action = np.random.choice(actions, p=pi_)
 
@@ -99,14 +102,11 @@ class AlphaZeroMCTS:
         x = 1/T * np.log(visits + 1e-11)
         x = np.exp(x - x.max())
         pi = x/x.sum()
-        # 添加狄利克雷噪声
-        if self.is_self_play:
-            pi = 0.75*pi + 0.25*np.random.dirichlet(0.03*np.ones(len(pi)))
         return pi
 
     def reset_root(self):
         """ 重置根节点 """
-        self.root = Node(prior_prob=1, parent=None)
+        self.root = Node(prior_prob=1, c_puct=self.c_puct, parent=None)
 
     def set_self_play(self, is_self_play: bool):
         """ 设置蒙特卡洛树的自我博弈状态 """

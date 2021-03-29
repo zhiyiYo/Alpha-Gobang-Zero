@@ -19,17 +19,17 @@ class Node:
         parent: Node
             父级节点
         """
-        self.c_puct = c_puct
-        self.parent = parent
-        self.P = prior_prob
         self.Q = 0
         self.U = 0
         self.N = 0
         self.score = 0
+        self.P = prior_prob
+        self.c_puct = c_puct
+        self.parent = parent
         self.children = {}  # type:Dict[int, Node]
 
     def select(self) -> tuple:
-        """ 返回 `score` 最大的子节点，同时返回该节点对应的 action
+        """ 返回 `score` 最大的子节点和该节点对应的 action
 
         Returns
         -------
@@ -72,7 +72,7 @@ class Node:
 
     def get_score(self):
         """ 计算节点得分 """
-        self.U = self.c_puct*self.P * sqrt(self.parent.N)/(1 + self.N)
+        self.U = self.c_puct * self.P * sqrt(self.parent.N)/(1 + self.N)
         self.score = self.U + self.Q
         return self.score
 

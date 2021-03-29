@@ -7,7 +7,7 @@ from torch import Tensor
 from torch.utils.data import Dataset
 
 SelfPlayData = namedtuple(
-    'SelfPlayData', ['feature_planes_list', 'pi_list', 'z'])
+    'SelfPlayData', ['feature_planes_list', 'pi_list', 'z_list'])
 
 
 class SelfPlayDataSet(Dataset):
@@ -30,11 +30,11 @@ class SelfPlayDataSet(Dataset):
     def append(self, self_play_data: SelfPlayData):
         """ 向数据集中插入数据 """
         n = train_config.get('board_len', 9)
-        z = Tensor(self_play_data.z)
+        z_list = Tensor(self_play_data.z_list)
         pi_list = self_play_data.pi_list
         feature_planes_list = self_play_data.feature_planes_list
         # 使用翻转和镜像扩充已有数据集
-        for pi, feature_planes in zip(pi_list, feature_planes_list):
+        for z, pi, feature_planes in zip(z_list, pi_list, feature_planes_list):
             for i in range(4):
                 # 逆时针旋转 i*90°
                 rot_features = torch.rot90(Tensor(feature_planes), i, (1, 2))

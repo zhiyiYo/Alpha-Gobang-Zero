@@ -10,9 +10,9 @@ import numpy as np
 class ChessBoard:
     """ 棋盘类 """
 
+    EMPTY = 0
     BLACK = 1
-    WHITE = 0
-    EMPTY = -1
+    WHITE = -1
 
     def __init__(self, board_len=9, n_feature_planes=7):
         """
@@ -24,8 +24,8 @@ class ChessBoard:
         n_feature_planes: int
             特征平面的个数，必须为奇数
         """
-        if n_feature_planes % 2 == 0:
-            raise ValueError("特征平面的个数必须为奇数")
+        # if n_feature_planes % 2 == 0:
+        #     raise ValueError("特征平面的个数必须为奇数")
         self.board_len = board_len
         self.current_player = self.BLACK
         self.n_feature_planes = n_feature_planes
@@ -108,7 +108,6 @@ class ChessBoard:
 
         for i in range(4):
             count = 1
-
             for j in range(2):
                 flag = True
                 row_t, col_t = row, col
@@ -130,20 +129,16 @@ class ChessBoard:
 
         return False, None
 
-    def __has_five(self, start, end, step=1):
-        """ 判断指定区域的棋子颜色是否相同 """
-        return len(set(self.state.get(i, self.EMPTY) for i in range(start, end, step))) == 1
-
     def get_feature_planes(self) -> torch.Tensor:
         """ 棋盘状态特征张量，维度为 `(n_feature_planes, board_len, board_len)`
 
         Returns
         -------
-        feature_planes: Tensor of shape (n_feature_planes, board_len, board_len)
+        feature_planes: Tensor of shape `(n_feature_planes, board_len, board_len)`
             特征平面图像
         """
-        feature_planes = torch.zeros(
-            (self.n_feature_planes, self.board_len**2))
+        n = self.board_len
+        feature_planes = torch.zeros((self.n_feature_planes, n**2))
         # 最后一张图像代表当前玩家颜色
         feature_planes[-1] = self.current_player
         # 添加历史信息
@@ -157,8 +152,8 @@ class ChessBoard:
                     feature_planes[2*i, Xt[i:]] = 1
                 if i < len(Yt):
                     feature_planes[2*i+1, Yt[i:]] = 1
-
-        return feature_planes.view(self.n_feature_planes, self.board_len, self.board_len)
+                    
+        return feature_planes.view(self.n_feature_planes, n, n)
 
 
 class ColorError(ValueError):

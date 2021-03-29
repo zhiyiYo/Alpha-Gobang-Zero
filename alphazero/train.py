@@ -24,6 +24,7 @@ def save_model(train_func):
         except:
             t = time.strftime('%Y-%m-%d_%H-%M-%S',
                               time.localtime(time.time()))
+            os.makedirs('model', exist_ok=True)
             path = f'model\\last_policy_value_net_{t}.pth'
             torch.save(train_pipe_line.policy_value_net, path)
             print(f'🎉 训练结束，已将当前模型保存到 {os.path.join(os.getcwd(), path)}')
@@ -57,20 +58,23 @@ class PolicyValueLoss(nn.Module):
         z: Tensor of shape (N, n_actions)
             最终的游戏结果相对每一个玩家的奖赏
         """
-        value_loss = F.mse_loss(value.repeat(1, z.size(1)), z)
+        value_loss = F.mse_loss(value.flatten(), z)
         policy_loss = -torch.sum(pi*p_hat, dim=1).mean()
         loss = value_loss + policy_loss
         return loss
 
 
-class TrainPipeLine:
+class TrainModel:
     """ 训练模型 """
 
-    def __init__(self, n_self_plays=1500, n_mcts_iters=800, batch_size=10,
+    def __init__(self, lr=0.01, n_self_plays=1500, n_mcts_iters=800, batch_size=8, start_train_size=800,
                  check_frequency=100, n_test_games=10, c_puct=4, is_use_gpu=True, **kwargs):
         """
         Parameters
         ----------
+        lr: float
+            学习率
+
         n_self_plays: int
             自我博弈游戏局数
 
@@ -79,6 +83,9 @@ class TrainPipeLine:
 
         batch_size: int
             mini-batch 的大小
+
+        start_train_size: int
+            开始训练模型时的最小数据集尺寸
 
         check_frequency: int
             测试模型的频率
@@ -94,11 +101,13 @@ class TrainPipeLine:
         """
         self.c_puct = c_puct
         self.is_use_gpu = is_use_gpu
+        self.batch_size = batch_size
         self.n_self_plays = n_self_plays
         self.n_test_games = n_test_games
         self.n_mcts_iters = n_mcts_iters
         self.check_frequency = check_frequency
-        self.chess_board = ChessBoard()
+        self.start_train_size = start_train_size
+        self.chess_board = ChessBoard(n_feature_planes=5)
         self.device = torch.device('cuda:0' if is_use_gpu else 'cpu')
         # 实例化策略-价值网络和蒙特卡洛搜索树
         self.policy_value_net = self.__get_policy_value_net()
@@ -106,11 +115,10 @@ class TrainPipeLine:
             self.policy_value_net, c_puct=c_puct, n_iters=n_mcts_iters, is_self_play=True)
         # 创建优化器和损失函数
         self.optimizer = optim.SGD(
-            self.policy_value_net.parameters(), lr=0.01, momentum=0.9, weight_decay=1e-4)
+            self.policy_value_net.parameters(), lr=lr, momentum=0.9, weight_decay=1e-4)
         self.criterion = PolicyValueLoss()
         self.lr_scheduler = MultiStepLR(self.optimizer, [400, 800], gamma=0.1)
         # 实例化数据集
-        self.batch_size = batch_size
         self.dataset = SelfPlayDataSet()
         # 记录误差
         self.writer = SummaryWriter('log')
@@ -124,7 +132,7 @@ class TrainPipeLine:
         self_play_data: namedtuple
             自我博弈数据，有以下三个成员:
             * `pi_list`: 蒙特卡洛树搜索产生的动作概率向量 π 组成的列表
-            * `z`: 一局之中每个动作的玩家相对最后的游戏结果的奖赏列表
+            * `z_list`: 一局之中每个动作的玩家相对最后的游戏结果的奖赏列表
             * `feature_planes_list`: 一局之中每个动作对应的特征平面组成的列表
         """
         # 初始化棋盘和数据容器
@@ -143,16 +151,16 @@ class TrainPipeLine:
             is_over, winner = self.chess_board.is_game_over()
             if is_over:
                 if winner is not None:
-                    z = [1 if i == winner else -1 for i in players]
+                    z_list = [1 if i == winner else -1 for i in players]
                 else:
-                    z = [0]*len(players)
+                    z_list = [0]*len(players)
                 break
 
         # 重置根节点
         self.mcts.reset_root()
 
         # 返回数据
-        self_play_data = SelfPlayData(feature_planes_list, pi_list, z)
+        self_play_data = SelfPlayData(feature_planes_list, pi_list, z_list)
         return self_play_data
 
     @save_model
@@ -163,8 +171,8 @@ class TrainPipeLine:
             self.policy_value_net.eval()
             self.dataset.append(self.__self_play())
 
-            # 如果 数据集中的数据量大于 batch_size 就进行一次训练
-            if len(self.dataset) >= self.batch_size:
+            # 如果数据集中的数据量大于 start_train_size 就进行一次训练
+            if len(self.dataset) >= self.start_train_size:
                 data_loader = DataLoader(
                     self.dataset, self.batch_size, shuffle=True, drop_last=False)
                 print('💊 开始训练...')
@@ -187,7 +195,7 @@ class TrainPipeLine:
                     self.lr_scheduler.step()
 
                 # 记录误差
-                self.train_losses.append(loss.item())
+                self.train_losses.append([i, loss.item()])
                 self.writer.add_scalar('Loss', loss.item(), i)
                 print(f"🚩 train_loss = {loss.item():<10.5f}\n")
                 # 清空数据集
@@ -258,7 +266,8 @@ class TrainPipeLine:
             net = torch.load(model).to(self.device)  # type:PolicyValueNet
             net.set_device(self.is_use_gpu)
         else:
-            net = PolicyValueNet(is_use_gpu=self.is_use_gpu).to(self.device)
+            net = PolicyValueNet(n_feature_planes=self.chess_board.n_feature_planes,
+                                 is_use_gpu=self.is_use_gpu).to(self.device)
         return net
 
     def __load_losses(self):

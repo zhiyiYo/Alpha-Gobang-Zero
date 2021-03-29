@@ -10,7 +10,7 @@
     pip install -r requirements.txt
     ```
 
-2. 安装 `PyTorch`；
+2. 安装 `PyTorch`，具体操作参见 [博客](https://blog.csdn.net/qq_23013309/article/details/103965619)；
 
 3. 根据电脑是否装有 `NVIDIA` 显卡，设置 `~config.config` 中 `is_use_gpu` 的值；
 

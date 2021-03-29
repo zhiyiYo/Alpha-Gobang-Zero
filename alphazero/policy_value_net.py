@@ -121,11 +121,9 @@ class PolicyValueNet(nn.Module):
         self.is_use_gpu = is_use_gpu
         self.n_feature_planes = n_feature_planes
         self.device = torch.device('cuda:0' if is_use_gpu else 'cpu')
-        self.conv = nn.Sequential(
-            ConvBlock(n_feature_planes, 32, kernel_size=3, padding=1),
-            ConvBlock(32, 64, kernel_size=3, padding=1),
-            ConvBlock(64, 128, kernel_size=3, padding=1),
-        )
+        self.conv = ConvBlock(n_feature_planes, 128, 3, padding=1)
+        self.residues = nn.Sequential(
+            *[ResidueBlock(128, 128) for i in range(4)])
         self.policy_head = PolicyHead(128, board_len)
         self.value_head = ValueHead(128, board_len)
 
@@ -146,11 +144,12 @@ class PolicyValueNet(nn.Module):
             当前局面的估值
         """
         x = self.conv(x)
+        x = self.residues(x)
         p_hat = self.policy_head(x)
         value = self.value_head(x)
         return p_hat, value
 
-    def get_action_probs_value(self, chess_board: ChessBoard):
+    def predict(self, chess_board: ChessBoard):
         """ 获取当前局面上所有可用 `action` 和他对应的先验概率 `P(s, a)`，以及局面的 `value`
 
         Parameters
@@ -160,8 +159,8 @@ class PolicyValueNet(nn.Module):
 
         Returns
         -------
-        action_probs: zip of length `len(chess_board.available_actions)`
-            当前局面上所有可用 `action` 和他对应的先验概率 `P(s, a)`
+        probs: `np.ndarray` of shape `(len(chess_board.available_actions), )`
+            当前局面上所有可用 `action` 对应的先验概率 `P(s, a)`
 
         value: float
             当前局面的估值
@@ -169,14 +168,14 @@ class PolicyValueNet(nn.Module):
         feature_planes = chess_board.get_feature_planes().to(self.device)
         feature_planes.unsqueeze_(0)
         p_hat, value = self(feature_planes)
-        # 将对数概率转换为非对数概率
+        # 将对数概率转换为概率
         p = torch.exp(p_hat).flatten()
         # 只取可行的落点
         if self.is_use_gpu:
             p = p[chess_board.available_actions].cpu().detach().numpy()
         else:
             p = p[chess_board.available_actions].detach().numpy()
-        return zip(chess_board.available_actions, p), value[0].item()
+        return p, value[0].item()
 
     def set_device(self, is_use_gpu: bool):
         """ 设置神经网络运行设备 """
