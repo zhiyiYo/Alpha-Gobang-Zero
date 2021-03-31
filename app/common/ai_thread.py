@@ -37,6 +37,7 @@ class AIThread(QThread):
         self.policyValueNet = torch.load(model).to(
             self.device)  # type:PolicyValueNet
         self.policyValueNet.set_device(is_use_gpu=isUseGPU)
+        self.policyValueNet.eval()
         self.mcts = AlphaZeroMCTS(
             self.policyValueNet, c_puct=c_puct, n_iters=n_iters)
 

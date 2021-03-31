@@ -7,7 +7,7 @@ from torch import Tensor
 from torch.utils.data import Dataset
 
 SelfPlayData = namedtuple(
-    'SelfPlayData', ['feature_planes_list', 'pi_list', 'z_list'])
+    'SelfPlayData', ['pi_list', 'z_list', 'feature_planes_list'])
 
 
 class SelfPlayDataSet(Dataset):
@@ -15,7 +15,7 @@ class SelfPlayDataSet(Dataset):
 
     def __init__(self):
         super().__init__()
-        self.__data_deque = deque()
+        self.__data_deque = deque(maxlen=10000)
 
     def __len__(self):
         return len(self.__data_deque)

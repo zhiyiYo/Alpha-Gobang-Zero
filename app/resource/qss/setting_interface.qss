@@ -1,0 +1,207 @@
+QWidget{
+    background-color: white;
+}
+
+QScrollArea {
+    background-color: white;
+    border: none;
+}
+
+
+/* 标签 */
+QLabel{
+    font:18px 'Microsoft YaHei';
+}
+
+QLabel#settingLabel{
+    font:41px 'Microsoft YaHei Light';
+}
+
+QLabel#titleLabel{
+    font:29px 'Microsoft YaHei';
+}
+
+QLabel#clickableLabel{
+    /*color: rgb(0,107,131);*/
+    color: rgb(0, 153, 188);
+    font:18px 'Microsoft YaHei';
+}
+
+QLabel#clickableLabel:hover {
+    color: rgb(154,154,154);
+}
+
+
+/* 复选框 */
+QCheckBox{
+    spacing:15px;
+    color:black;
+    font:18px 'Microsoft YaHei';
+}
+
+QCheckBox::indicator{
+    width: 50px;
+    height: 25px;
+}
+
+QCheckBox::indicator:unchecked {
+    border-image: url(app/resource/images/setting_interface/checkBox_unchecked.png);
+}
+
+QCheckBox::indicator:checked {
+    border-image: url(app/resource/images/setting_interface/checkBox_checked.png);
+}
+
+QCheckBox::indicator:unchecked:hover {
+    border-image: url(app/resource/images/setting_interface/checkBox_unchecked_hover.png);
+}
+
+QCheckBox::indicator:checked:hover {
+    border-image: url(app/resource/images/setting_interface/checkBox_checked_hover.png);
+}
+
+QCheckBox::indicator:unchecked:pressed {
+    border-image: url(app/resource/images/setting_interface/checkBox_unchecked_pressed.png);
+}
+
+QCheckBox::indicator:checked:pressed {
+    border-image: url(app/resource/images/setting_interface/checkBox_checked_pressed.png);
+}
+
+QCheckBox::indicator:unchecked:disabled{
+    border-image: url(app/resource/images/setting_interface/checkBox_unchecked_disabled.png);
+}
+
+
+
+/* 单选框 */
+QRadioButton{
+    spacing:10px;
+    color:black;
+    font:18px 'Microsoft YaHei';
+}
+
+QRadioButton::indicator {
+    height: 26px;
+    width: 25px;
+}
+
+QRadioButton::indicator:unchecked {
+    border-image: url(app/resource/images/setting_interface/radioButton_unchecked.png);
+}
+
+
+QRadioButton::indicator:checked {
+    border-image: url(app/resource/images/setting_interface/radioButton_checked.png);
+
+}
+
+QRadioButton::indicator:unchecked:hover {
+    border-image: url(app/resource/images/setting_interface/radioButton_unchecked_hover.png);
+
+}
+
+QRadioButton::indicator:checked:hover {
+    border-image: url(app/resource/images/setting_interface/radioButton_checked_hover.png);
+
+}
+
+QRadioButton::indicator:unchecked:pressed {
+    border-image: url(app/resource/images/setting_interface/radioButton_unchecked_pressed.png);
+
+}
+
+QRadioButton::indicator:checked:pressed {
+    border-image: url(app/resource/images/setting_interface/radioButton_checked_pressed.png);
+
+}
+
+
+/* 滚动条 */
+QScrollBar {
+    background: transparent;
+    width: 3px;
+}
+
+/*隐藏上箭头*/
+QScrollBarr::sub-line {
+    background: transparent;
+}
+
+/*隐藏下箭头*/
+QScrollBar::add-line {
+    background: transparent;
+}
+
+QScrollBar::handle {
+    background: rgb(122, 122, 122);
+    border: 0px solid transparent;
+    min-height: 40px;
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+/*滑动条*/
+QSlider:horizontal {
+    height: 25px;
+    width: 188px;
+    background-color: transparent;
+    /*padding:10px 0px 10px 0px;*/
+}
+
+
+QSlider::groove:horizontal {
+    width: 188px;
+    border: none;
+    background-color: transparent;
+}
+
+QSlider::handle:horizontal {
+    width: 25px;
+    height: 25px;
+    border-image: url(app/resource/images/setting_interface/slider_handle_normal_25_25.png);
+}
+
+QSlider::handle:horizontal:hover {
+    border-image: url(app/resource/images/setting_interface/slider_handle_hover_25_25.png);
+}
+
+QSlider::handle:horizontal:pressed {
+    border-image: url(app/resource/images/setting_interface/slider_handle_pressed_25_25.png);
+}
+
+
+QSlider::sub-page:horizontal {
+    /*已划过部分的颜色*/
+    background: rgb(0, 153, 187);
+    margin-top: 11px;
+    margin-bottom: 11px;
+}
+
+QSlider::add-page:horizontal {
+    background-color: rgb(130, 131, 134);
+    margin-top: 11px;
+    margin-bottom: 11px;
+}
+
+
+/* 按钮 */
+QPushButton {
+    background-color: rgb(204, 204, 204);
+    font: 18px 'Microsoft YaHei';
+    border: transparent;
+    border-radius: 4px;
+    height: 20px;
+    width: 55px;
+}
+
+QPushButton:pressed:hover {
+    background-color: rgb(153, 153, 153);
+}
+
+QPushButton:hover {
+    background-color: rgb(230, 230, 230);
+}

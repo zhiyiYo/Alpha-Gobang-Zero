@@ -10,9 +10,9 @@ import numpy as np
 class ChessBoard:
     """ 棋盘类 """
 
-    EMPTY = 0
+    EMPTY = -1
+    WHITE = 0
     BLACK = 1
-    WHITE = -1
 
     def __init__(self, board_len=9, n_feature_planes=7):
         """
@@ -22,10 +22,8 @@ class ChessBoard:
             棋盘边长
 
         n_feature_planes: int
-            特征平面的个数，必须为奇数
+            特征平面的个数，必须为偶数
         """
-        # if n_feature_planes % 2 == 0:
-        #     raise ValueError("特征平面的个数必须为奇数")
         self.board_len = board_len
         self.current_player = self.BLACK
         self.n_feature_planes = n_feature_planes
@@ -140,7 +138,7 @@ class ChessBoard:
         n = self.board_len
         feature_planes = torch.zeros((self.n_feature_planes, n**2))
         # 最后一张图像代表当前玩家颜色
-        feature_planes[-1] = self.current_player
+        # feature_planes[-1] = self.current_player
         # 添加历史信息
         if self.state:
             actions = np.array(list(self.state.keys()))[::-1]
@@ -152,7 +150,7 @@ class ChessBoard:
                     feature_planes[2*i, Xt[i:]] = 1
                 if i < len(Yt):
                     feature_planes[2*i+1, Yt[i:]] = 1
-                    
+
         return feature_planes.view(self.n_feature_planes, n, n)
 
 

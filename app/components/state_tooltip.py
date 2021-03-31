@@ -68,7 +68,7 @@ class StateTooltip(QWidget):
         self.titleLabel.setObjectName("titleLabel")
         self.contentLabel.setObjectName("contentLabel")
         # 将信号连接到槽函数
-        self.closeButton.clicked.connect(self.__closeButtonClickedSlot)
+        self.closeButton.clicked.connect(self.hide)
         self.rotateTimer.timeout.connect(self.__rotateTimerFlowSlot)
         self.closeTimer.timeout.connect(self.__slowlyClose)
         self.__initLayout()
@@ -85,7 +85,7 @@ class StateTooltip(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(r"app\resource\qss\stateTooltip.qss", encoding="utf-8") as f:
+        with open(r"app\resource\qss\state_tooltip.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def setTitle(self, title):
@@ -105,11 +105,6 @@ class StateTooltip(QWidget):
         # 运行完成后主动关闭窗口
         if self.isDone:
             self.closeTimer.start()
-
-    def __closeButtonClickedSlot(self):
-        """ 按下关闭按钮前摧毁相关线程 """
-        self.closedSignal.emit()
-        self.deleteLater()
 
     def __slowlyClose(self):
         """ 缓慢关闭窗口 """

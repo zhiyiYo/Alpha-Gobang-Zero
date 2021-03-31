@@ -43,7 +43,7 @@ class MainWindow(QWidget):
         self.isAllowHumanAct = True
         self.previousAIChess = None
         self.isHumanFirst = is_human_first
-        self.chessBoard = ChessBoard(self.boardLen, 7)
+        self.chessBoard = ChessBoard(self.boardLen, n_feature_planes=6)
         self.aiThread = AIThread(
             self.chessBoard, model, c_puct, n_mcts_iters, is_use_gpu, self)
         self.humanColor = ChessBoard.BLACK if is_human_first else ChessBoard.WHITE
@@ -75,7 +75,7 @@ class MainWindow(QWidget):
     def mousePressEvent(self, e: QMouseEvent) -> None:
         """ 鼠标按下后放置棋子 """
         # AI还在思考就直接返回
-        if not self.isAllowHumanAct:
+        if not self.isAllowHumanAct or e.button() == Qt.RightButton:
             return
         self.isEnableAI = True
         # 计算棋子在矩阵上的坐标

@@ -8,7 +8,6 @@ import torch.nn.functional as F
 from torch import nn, optim
 from torch.optim.lr_scheduler import MultiStepLR
 from torch.utils.data import DataLoader
-from torch.utils.tensorboard import SummaryWriter
 
 from .alpha_zero_mcts import AlphaZeroMCTS
 from .chess_board import ChessBoard
@@ -22,14 +21,14 @@ def save_model(train_func):
         try:
             train_func(train_pipe_line)
         except:
+            os.makedirs('model', exist_ok=True)
             t = time.strftime('%Y-%m-%d_%H-%M-%S',
                               time.localtime(time.time()))
-            os.makedirs('model', exist_ok=True)
             path = f'model\\last_policy_value_net_{t}.pth'
+            train_pipe_line.policy_value_net.eval()
             torch.save(train_pipe_line.policy_value_net, path)
             print(f'🎉 训练结束，已将当前模型保存到 {os.path.join(os.getcwd(), path)}')
             # 保存数据
-            train_pipe_line.writer.close()
             with open('log\\train_losses.json',  'w', encoding='utf-8') as f:
                 json.dump(train_pipe_line.train_losses, f)
     return wrapper
@@ -52,13 +51,13 @@ class PolicyValueLoss(nn.Module):
         pi: Tensor of shape (N, board_len^2)
             `mcts` 产生的动作概率向量
 
-        value: Tensor of shape (N, 1)
+        value: Tensor of shape (N, )
             对每个局面的估值
 
-        z: Tensor of shape (N, n_actions)
+        z: Tensor of shape (N, )
             最终的游戏结果相对每一个玩家的奖赏
         """
-        value_loss = F.mse_loss(value.flatten(), z)
+        value_loss = F.mse_loss(value, z)
         policy_loss = -torch.sum(pi*p_hat, dim=1).mean()
         loss = value_loss + policy_loss
         return loss
@@ -67,8 +66,8 @@ class PolicyValueLoss(nn.Module):
 class TrainModel:
     """ 训练模型 """
 
-    def __init__(self, lr=0.01, n_self_plays=1500, n_mcts_iters=800, batch_size=8, start_train_size=800,
-                 check_frequency=100, n_test_games=10, c_puct=4, is_use_gpu=True, **kwargs):
+    def __init__(self, lr=0.01, n_self_plays=1500, n_mcts_iters=500, n_feature_planes=4, batch_size=32,
+                 start_train_size=2000, check_frequency=100, n_test_games=10, c_puct=4, is_use_gpu=True, **kwargs):
         """
         Parameters
         ----------
@@ -80,6 +79,9 @@ class TrainModel:
 
         n_mcts_iters: int
             蒙特卡洛树搜索次数
+
+        n_feature_planes: int
+            特征平面个数
 
         batch_size: int
             mini-batch 的大小
@@ -107,21 +109,20 @@ class TrainModel:
         self.n_mcts_iters = n_mcts_iters
         self.check_frequency = check_frequency
         self.start_train_size = start_train_size
-        self.chess_board = ChessBoard(n_feature_planes=5)
         self.device = torch.device('cuda:0' if is_use_gpu else 'cpu')
+        self.chess_board = ChessBoard(n_feature_planes=n_feature_planes)
         # 实例化策略-价值网络和蒙特卡洛搜索树
         self.policy_value_net = self.__get_policy_value_net()
         self.mcts = AlphaZeroMCTS(
             self.policy_value_net, c_puct=c_puct, n_iters=n_mcts_iters, is_self_play=True)
         # 创建优化器和损失函数
-        self.optimizer = optim.SGD(
-            self.policy_value_net.parameters(), lr=lr, momentum=0.9, weight_decay=1e-4)
+        self.optimizer = optim.Adam(
+            self.policy_value_net.parameters(), lr=lr, weight_decay=1e-4)
         self.criterion = PolicyValueLoss()
         self.lr_scheduler = MultiStepLR(self.optimizer, [400, 800], gamma=0.1)
         # 实例化数据集
         self.dataset = SelfPlayDataSet()
         # 记录误差
-        self.writer = SummaryWriter('log')
         self.train_losses = self.__load_losses()
 
     def __self_play(self):
@@ -136,6 +137,7 @@ class TrainModel:
             * `feature_planes_list`: 一局之中每个动作对应的特征平面组成的列表
         """
         # 初始化棋盘和数据容器
+        self.policy_value_net.eval()
         self.chess_board.clear_board()
         pi_list, feature_planes_list, players = [], [], []
 
@@ -160,7 +162,8 @@ class TrainModel:
         self.mcts.reset_root()
 
         # 返回数据
-        self_play_data = SelfPlayData(feature_planes_list, pi_list, z_list)
+        self_play_data = SelfPlayData(
+            pi_list=pi_list, z_list=z_list, feature_planes_list=feature_planes_list)
         return self_play_data
 
     @save_model
@@ -168,25 +171,26 @@ class TrainModel:
         """ 训练模型 """
         for i in range(self.n_self_plays):
             print(f'🏹 正在进行第 {i+1} 局自我博弈游戏...')
-            self.policy_value_net.eval()
             self.dataset.append(self.__self_play())
 
             # 如果数据集中的数据量大于 start_train_size 就进行一次训练
             if len(self.dataset) >= self.start_train_size:
-                data_loader = DataLoader(
-                    self.dataset, self.batch_size, shuffle=True, drop_last=False)
+                data_loader = iter(DataLoader(
+                    self.dataset, self.batch_size, shuffle=True, drop_last=False))
                 print('💊 开始训练...')
 
                 self.policy_value_net.train()
-                for feature_planes, pi, z in data_loader:
-                    feature_planes = feature_planes.to(self.device)
-                    pi, z = pi.to(self.device), z.to(self.device)
+                # 随机选出一批数据来训练，防止过拟合
+                feature_planes, pi, z = next(data_loader)
+                feature_planes = feature_planes.to(self.device)
+                pi, z = pi.to(self.device), z.to(self.device)
+                for _ in range(5):
                     # 前馈
                     p_hat, value = self.policy_value_net(feature_planes)
                     # 梯度清零
                     self.optimizer.zero_grad()
                     # 计算损失
-                    loss = self.criterion(p_hat, pi, value, z)
+                    loss = self.criterion(p_hat, pi, value.flatten(), z)
                     # 误差反向传播
                     loss.backward()
                     # 更新参数
@@ -196,14 +200,10 @@ class TrainModel:
 
                 # 记录误差
                 self.train_losses.append([i, loss.item()])
-                self.writer.add_scalar('Loss', loss.item(), i)
                 print(f"🚩 train_loss = {loss.item():<10.5f}\n")
-                # 清空数据集
-                self.dataset.clear()
 
             # 测试模型
             if (i+1) % self.check_frequency == 0:
-                self.policy_value_net.eval()
                 self.__test_model()
 
     def __test_model(self):
@@ -216,8 +216,11 @@ class TrainModel:
 
         # 载入历史最优模型
         best_model = torch.load(model_path)  # type:PolicyValueNet
+        best_model.eval()
+        best_model.set_device(self.is_use_gpu)
         mcts = AlphaZeroMCTS(best_model, self.c_puct, self.n_mcts_iters)
         self.mcts.set_self_play(False)
+        self.policy_value_net.eval()
 
         # 开始比赛
         print('🩺 正在测试当前模型...')

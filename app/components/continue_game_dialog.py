@@ -102,7 +102,7 @@ class SubContinueGameDialog(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(r"app\resource\qss\deleteCardPanel.qss", encoding="utf-8") as f:
+        with open(r"app\resource\qss\continue_game_dialog.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def paintEvent(self, e):
