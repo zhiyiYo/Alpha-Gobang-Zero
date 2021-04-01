@@ -3,8 +3,11 @@
 
 ## 界面
 * 快乐游戏
+
   ![游戏界面](docs/screenshot/游戏界面.png)
 * 配置游戏
+
+
   ![设置界面](docs/screenshot/设置界面.png)
 
 ## 快速开始
