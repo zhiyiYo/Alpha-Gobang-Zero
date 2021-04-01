@@ -1,5 +1,7 @@
 # coding:utf-8
 from alphazero import ChessBoard, ColorError
+
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QLabel
 
@@ -20,11 +22,12 @@ class Chess(QLabel):
             ChessBoard.BLACK: 'app\\resource\\images\\black.png',
             ChessBoard.WHITE: 'app\\resource\\images\\white.png',
         }
-        self.setPixmap(QPixmap(self.__imagePath_dict[self.color]))
+        self.setPixmap(QPixmap(self.__imagePath_dict[self.color]).scaled(
+            40, 40, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         if needTips:
             self.tipLabel = QLabel(self)
             self.tipLabel.setPixmap(QPixmap('app\\resource\\images\\气泡.png'))
-            self.tipLabel.move(20, 0)
+            self.tipLabel.move(24, 0)
         else:
             self.tipLabel = QLabel(self)
 

@@ -66,11 +66,14 @@ class PolicyValueLoss(nn.Module):
 class TrainModel:
     """ 训练模型 """
 
-    def __init__(self, lr=0.01, n_self_plays=1500, n_mcts_iters=500, n_feature_planes=4, batch_size=32,
+    def __init__(self, board_len=9, lr=0.01, n_self_plays=1500, n_mcts_iters=500, n_feature_planes=4, batch_size=32,
                  start_train_size=2000, check_frequency=100, n_test_games=10, c_puct=4, is_use_gpu=True, **kwargs):
         """
         Parameters
         ----------
+        board_len: int
+            棋盘大小
+
         lr: float
             学习率
 
@@ -110,7 +113,7 @@ class TrainModel:
         self.check_frequency = check_frequency
         self.start_train_size = start_train_size
         self.device = torch.device('cuda:0' if is_use_gpu else 'cpu')
-        self.chess_board = ChessBoard(n_feature_planes=n_feature_planes)
+        self.chess_board = ChessBoard(board_len, n_feature_planes)
         # 实例化策略-价值网络和蒙特卡洛搜索树
         self.policy_value_net = self.__get_policy_value_net()
         self.mcts = AlphaZeroMCTS(
@@ -121,7 +124,7 @@ class TrainModel:
         self.criterion = PolicyValueLoss()
         self.lr_scheduler = MultiStepLR(self.optimizer, [400, 800], gamma=0.1)
         # 实例化数据集
-        self.dataset = SelfPlayDataSet()
+        self.dataset = SelfPlayDataSet(board_len)
         # 记录误差
         self.train_losses = self.__load_losses()
 

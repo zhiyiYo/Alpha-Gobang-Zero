@@ -1,0 +1,23 @@
+QToolButton {
+    background: transparent;
+    margin: 0;
+}
+
+QToolButton[state='normal'] {
+    background: transparent;
+    margin: 0;
+}
+
+QToolButton:hover {
+    background-color: rgba(0, 0, 0, 20);
+}
+
+QToolButton:pressed {
+    background: rgba(0, 0, 0, 50);
+}
+
+QLabel {
+    font: 25px "Microsoft YaHei";
+    font-weight: bold;
+
+}

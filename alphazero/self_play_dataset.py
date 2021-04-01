@@ -2,7 +2,6 @@
 from collections import deque, namedtuple
 
 import torch
-from config.config import train_config
 from torch import Tensor
 from torch.utils.data import Dataset
 
@@ -13,9 +12,10 @@ SelfPlayData = namedtuple(
 class SelfPlayDataSet(Dataset):
     """ 自我博弈数据集类，每个样本为元组 `(feature_planes, pi, z)` """
 
-    def __init__(self):
+    def __init__(self, board_len=9):
         super().__init__()
         self.__data_deque = deque(maxlen=10000)
+        self.board_len = board_len
 
     def __len__(self):
         return len(self.__data_deque)
@@ -29,7 +29,7 @@ class SelfPlayDataSet(Dataset):
 
     def append(self, self_play_data: SelfPlayData):
         """ 向数据集中插入数据 """
-        n = train_config.get('board_len', 9)
+        n = self.board_len
         z_list = Tensor(self_play_data.z_list)
         pi_list = self_play_data.pi_list
         feature_planes_list = self_play_data.feature_planes_list

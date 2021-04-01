@@ -46,8 +46,8 @@ class SubDeleteModelDialog(QWidget):
         # 创建小部件
         self.createWidgets()
         # 初始化
-        self.initWidget()
         self.initLayout()
+        self.initWidget()
         self.setQss()
 
     def createWidgets(self):
@@ -62,7 +62,7 @@ class SubDeleteModelDialog(QWidget):
 
     def initWidget(self):
         """ 初始化小部件 """
-        self.resize(650, 235)
+        self.resize(550, 235)
         self.adjustHeight()
         self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
         self.setShadowEffect()
@@ -80,8 +80,8 @@ class SubDeleteModelDialog(QWidget):
         """ 初始化布局 """
         self.subTitleLabel.move(30, 67)
         self.contentLabel.move(30, 116)
-        self.deleteButton.move(552, 167)
-        self.cancelButton.move(708, 167)
+        self.deleteButton.move(352, 167)
+        self.cancelButton.move(508, 167)
 
     def setShadowEffect(self):
         """ 添加阴影 """
@@ -92,12 +92,12 @@ class SubDeleteModelDialog(QWidget):
 
     def adjustHeight(self):
         """ 调整长度 """
-        newText, isWordWrap = autoWrap(self.contentLabel.text(), 92)
+        newText, isWordWrap = autoWrap(self.contentLabel.text(), 68)
         if isWordWrap:
-            self.resize(852, self.height() + 23)
+            self.resize(650, self.height() + 23)
             self.contentLabel.setText(newText)
-            self.cancelButton.move(708, 200)
-            self.deleteButton.move(552, 200)
+            self.deleteButton.move(352, 190)
+            self.cancelButton.move(508, 190)
 
     def paintEvent(self, e):
         """ 绘制背景 """

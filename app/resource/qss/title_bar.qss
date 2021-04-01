@@ -1,0 +1,14 @@
+QWidget {
+    background-color: transparent
+}
+
+QToolButton {
+    background-color: transparent;
+    border: none;
+    margin: 0px;
+}
+
+QLabel {
+    font: 15px 'Microsoft YaHei Light';
+    color: black;
+}

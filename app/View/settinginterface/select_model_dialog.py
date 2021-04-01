@@ -1,6 +1,6 @@
 # coding:utf-8
 
-import json
+import os
 
 from app.components.sub_panel_frame import SubPanelFrame
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
@@ -108,14 +108,15 @@ class SubSelectModelDialog(QWidget):
             self.selectedModel = path
             self.modelCard = ModelCard(path, self)
             self.modelCard.move(36, 130)
-            self.modelCard.clicked.connect(self.selectModelTimer.start)
+            self.modelCard.clicked.connect(self.deleteModelTimer.start)
             self.subTitleLabel.setText("现在我们正在使用这个模型")
+            self.subTitleLabel.adjustSize()
 
     def showDeleteModelPanel(self):
         """ 显示删除模型对话框 """
         self.deleteModelTimer.stop()
         self.deleteModelDialog = DeleteModelDialog(
-            self.selectedModel, self.window())
+            os.path.basename(self.selectedModel), self.window())
         self.deleteModelDialog.deleteButton.clicked.connect(
             self.deleteModelFolder)
         self.deleteModelDialog.exec_()

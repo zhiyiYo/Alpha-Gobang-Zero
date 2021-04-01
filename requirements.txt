@@ -76,3 +76,6 @@ webencodings==0.5.1
 wincertstore==0.2
 wrapt==1.11.2
 yapf==0.30.0
+pywin32==227
+pywin32-ctypes==0.2.0
+pywinpty==0.5.7

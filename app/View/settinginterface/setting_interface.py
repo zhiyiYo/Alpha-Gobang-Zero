@@ -24,7 +24,6 @@ class SettingInterface(QWidget):
         self.scrollArea = ScrollArea()
         self.useGPUCheckBox = QCheckBox(self.scrollWidget)
         self.useGPULabel = QLabel('显卡', self.scrollWidget)
-        self.settingLabel = QLabel('设置', self.scrollWidget)
         self.firstHandLabel = QLabel('先手', self.scrollWidget)
         self.mctsLabel = QLabel('蒙特卡洛树', self.scrollWidget)
         self.humanButton = QRadioButton('人类', self.scrollWidget)
@@ -49,37 +48,36 @@ class SettingInterface(QWidget):
 
     def __initWidget(self):
         """ 初始化界面 """
-        self.resize(720, 720)
+        self.resize(700, 700)
         self.scrollWidget.resize(540, 900)
         self.giveIssueButton.resize(94, 40)
         self.cPuctValueLabel.setMinimumWidth(50)
         self.scrollArea.setWidget(self.scrollWidget)
         self.hBoxLayout.addWidget(self.scrollArea)
         self.hBoxLayout.setContentsMargins(0, 0, 0, 0)
-        self.settingLabel.move(30, 50)
         # 选择模型文件
-        self.modelInPCLabel.move(30, 140)
-        self.selectModelLabel.move(30, 188)
+        self.modelInPCLabel.move(30, 30)
+        self.selectModelLabel.move(30, 138-60)
         # 使用 GPU 加速
-        self.useGPULabel.move(30, 248)
-        self.useGPUTipsLabel.move(30, 290)
-        self.useGPUCheckBox.move(30, 320)
+        self.useGPULabel.move(30, 198-60)
+        self.useGPUTipsLabel.move(30, 240-60)
+        self.useGPUCheckBox.move(30, 270-60)
         # 先手后手
-        self.firstHandLabel.move(30, 380)
-        self.humanButton.move(30, 430)
-        self.AIButton.move(30, 470)
+        self.firstHandLabel.move(30, 330-60)
+        self.humanButton.move(30, 380-60)
+        self.AIButton.move(30, 420-60)
         # 蒙特卡洛树参数
-        self.mctsLabel.move(30, 530)
-        self.cPuctLabel.move(30, 576)
-        self.cPuctSlider.move(30, 606)
-        self.cPuctValueLabel.move(230, 606)
-        self.mctsIterTimeLabel.move(30, 640)
-        self.mctsIterTimeSlider.move(30, 670)
-        self.mctsIterTimeValueLabel.move(230, 670)
+        self.mctsLabel.move(30, 480-60)
+        self.cPuctLabel.move(30, 526-60)
+        self.cPuctSlider.move(30, 556-60)
+        self.cPuctValueLabel.move(230, 556-60)
+        self.mctsIterTimeLabel.move(30, 590-60)
+        self.mctsIterTimeSlider.move(30, 620-60)
+        self.mctsIterTimeValueLabel.move(230, 620-60)
         # 关于此应用
-        self.aboutAppLabel.move(30, 730)
-        self.appInfoLabel.move(30, 772)
-        self.giveIssueButton.move(30, 830)
+        self.aboutAppLabel.move(30, 680-60)
+        self.appInfoLabel.move(30, 722-60)
+        self.giveIssueButton.move(30, 780-60)
         # 初始化 GPU 复选框
         isUseGPU = self.config.get('is_use_gpu', False) and cuda.is_available()
         self.useGPUCheckBox.setText('开' if isUseGPU else '关')
@@ -90,6 +88,8 @@ class SettingInterface(QWidget):
         self.cPuctSlider.setSingleStep(5)
         self.mctsIterTimeSlider.setSingleStep(50)
         self.mctsIterTimeSlider.setRange(1000, 3000)
+        self.cPuctSlider.setValue(10*self.config.get('c_puct', 4))
+        self.mctsIterTimeSlider.setValue(self.config.get('n_mcts_iters', 1500))
         # 初始化先手单选框
         isHumanFirst = self.config.get('is_human_first', True)
         self.humanButton.setChecked(isHumanFirst)
@@ -98,7 +98,6 @@ class SettingInterface(QWidget):
         self.mctsLabel.setObjectName('titleLabel')
         self.useGPULabel.setObjectName('titleLabel')
         self.aboutAppLabel.setObjectName('titleLabel')
-        self.settingLabel.setObjectName("settingLabel")
         self.firstHandLabel.setObjectName('titleLabel')
         self.modelInPCLabel.setObjectName('titleLabel')
         self.selectModelLabel.setObjectName("clickableLabel")
@@ -115,7 +114,14 @@ class SettingInterface(QWidget):
         """ 读入配置 """
         self.__checkDir()
         if not os.path.exists('app\config\config.json'):
-            return {}
+            config = {
+                "c_puct": 4,
+                "is_use_gpu": False,
+                "n_mcts_iters": 1500,
+                "is_human_first": True,
+                "model": "model\\best_policy_value_net.pth"
+            }
+            return config
         with open('app\config\config.json', encoding='utf-8') as f:
             return json.load(f)
 
@@ -166,3 +172,9 @@ class SettingInterface(QWidget):
         """ 调整蒙特卡洛树搜索次数槽函数 """
         self.config['n_mcts_iters'] = iterTime
         self.mctsIterTimeValueLabel.setNum(iterTime)
+
+    def saveConfig(self):
+        """ 保存设置 """
+        self.__checkDir()
+        with open('app\config\config.json', 'w', encoding='utf-8') as f:
+            json.dump(self.config, f)

@@ -58,7 +58,7 @@ class StateTooltip(QWidget):
 
     def __initWidget(self):
         """ 初始化小部件 """
-        self.setFixedSize(241, 61)
+        self.setFixedSize(240, 64)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_StyledBackground)
         self.rotateTimer.setInterval(50)
@@ -81,7 +81,7 @@ class StateTooltip(QWidget):
         self.titleLabel.move(39, 11)
         self.contentLabel.move(15, 34)
         self.closeButton.move(self.width() - 29, 23)
-        self.__setShadowEffect()
+        # self.__setShadowEffect()
 
     def __setQss(self):
         """ 设置层叠样式 """
@@ -140,11 +140,6 @@ class StateTooltip(QWidget):
             painter.drawPixmap(
                 14, 13, self.doneImage.width(), self.doneImage.height(), self.doneImage
             )
-
-    def show(self):
-        """ 重写show()函数 """
-        self.move(self.window().width() - self.width() - 30, 30)
-        super().show()
 
     def __setShadowEffect(self):
         """ 添加阴影 """

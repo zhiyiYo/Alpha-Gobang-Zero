@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QGraphicsOpacityEffect, QStackedWidget, QWidget
 
 class PopUpAniStackedWidget(QStackedWidget):
     """ 带弹出式切换窗口动画和淡入淡出动画的堆叠窗口类 """
+
     aniFinished = pyqtSignal()
     aniStart = pyqtSignal()
 
@@ -125,7 +126,7 @@ class PopUpAniStackedWidget(QStackedWidget):
             deltaY = nextWidgetAni_dict['deltaY']
             pos = self.__nextWidget.pos() + QPoint(deltaX, deltaY)
             self.__setAnimation(nextPopUpAni, pos,
-                                QPoint(self.__nextWidget.x(), self.y()), duration, easingCurve)
+                                QPoint(self.__nextWidget.x(), 0), duration, easingCurve)
             # 直接切换当前窗口
             super().setCurrentIndex(index)
         # 开始动画
