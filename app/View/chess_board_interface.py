@@ -1,14 +1,16 @@
 # coding:utf-8
+from typing import List
+
 import numpy as np
-
-from app.components.chess import Chess
-from app.components.state_tooltip import StateTooltip
-from app.components.continue_game_dialog import ContinueGameDialog
-from app.common.ai_thread import AIThread
 from alphazero.chess_board import ChessBoard
-
-from PyQt5.QtCore import Qt, pyqtSignal, QPoint
-from PyQt5.QtGui import QPixmap, QPainter, QBrush, QPen, QMouseEvent, QCursor
+from app.common.ai_thread import AIThread
+from app.components.chess import Chess
+from app.components.menu import ChessBoardMenu
+from app.components.continue_game_dialog import ContinueGameDialog
+from app.components.state_tooltip import StateTooltip
+from PyQt5.QtCore import QPoint, QRect, Qt, pyqtSignal
+from PyQt5.QtGui import (QBrush, QCursor, QMouseEvent, QPainter, QPen, QPixmap,
+                         QResizeEvent, QContextMenuEvent)
 from PyQt5.QtWidgets import QWidget
 
 
@@ -17,6 +19,7 @@ class ChessBoardInterface(QWidget):
 
     exitGameSignal = pyqtSignal()
     restartGameSignal = pyqtSignal()
+    switchToSettingInterfaceSignal = pyqtSignal()
 
     def __init__(self, model, c_puct=5, n_mcts_iters=1500, is_human_first=True,
                  is_use_gpu=True, boardLen=9, margin=37, gridSize=78, parent=None):
@@ -51,15 +54,17 @@ class ChessBoardInterface(QWidget):
             父级窗口
         """
         super().__init__(parent=parent)
-        self.chess_list = []
+        self.chess_list = []  # type: List[Chess]
         self.margin = margin
         self.isEnableAI = True
         self.boardLen = boardLen
         self.gridSize = gridSize
         self.isUseGPU = is_use_gpu
-        self.isAllowHumanAct = True
+        self.isAIThinking = False
         self.previousAIChess = None
+        self.stateTooltip = None
         self.isHumanFirst = is_human_first
+        self.contextMenu = ChessBoardMenu(self)
         self.chessBoard = ChessBoard(self.boardLen, n_feature_planes=6)
         self.aiThread = AIThread(
             self.chessBoard, model, c_puct, n_mcts_iters, is_use_gpu, parent=self)
@@ -69,10 +74,11 @@ class ChessBoardInterface(QWidget):
 
     def __initWidget(self):
         """ 初始化界面 """
-        self.resize(700, 700)
-        self.__setCursor()
+        size = 2*self.margin + (self.boardLen-1)*self.gridSize
+        self.setMinimumSize(size, size)
+        self.setMouseTracking(True)
         # 信号连接到槽函数
-        self.aiThread.searchComplete.connect(self.__searchCompleteSlot)
+        self.__connectSignalToSlot()
         if not self.isHumanFirst:
             self.getAIAction()
 
@@ -82,19 +88,21 @@ class ChessBoardInterface(QWidget):
         painter.setRenderHints(QPainter.Antialiasing)
         # 绘制网格
         painter.setPen(QPen(Qt.black, 2))
+        left, top = self.__getMargin()
         for i in range(self.boardLen):
             x = y = self.margin + i*self.gridSize
+            x = left + i*self.gridSize
+            y = top + i*self.gridSize
             # 竖直线
-            painter.drawLine(x, self.margin, x, self.margin +
-                             (self.boardLen-1)*self.gridSize)
+            painter.drawLine(x, top, x, self.height()-top)
             # 水平线
-            painter.drawLine(self.margin, y, self.margin +
-                             (self.boardLen-1)*self.gridSize, y)
+            painter.drawLine(left, y, self.width()-left-1, y)
         # 绘制圆点
         painter.setBrush(QBrush(Qt.black))
         painter.setPen(Qt.NoPen)
         r = 6
-        x = y = (self.boardLen-1)//2 * self.gridSize + self.margin - r
+        x = self.width()//2-r
+        y = self.height()//2-r
         painter.drawEllipse(x, y, 2*r, 2*r)
         for pos in [(-1, -1), (1, -1), (-1, 1), (1, 1)]:
             x_ = self.gridSize*pos[0]*(self.boardLen-1)//2/2 + x
@@ -104,7 +112,8 @@ class ChessBoardInterface(QWidget):
     def mousePressEvent(self, e: QMouseEvent) -> None:
         """ 鼠标按下后放置棋子 """
         # AI还在思考就直接返回
-        if not self.isAllowHumanAct or e.button() == Qt.RightButton:
+        if self.isAIThinking or e.button() == Qt.RightButton or\
+                e.pos() not in self.__getChessRegion():
             return
         self.isEnableAI = True
         # 计算棋子在矩阵上的坐标
@@ -118,16 +127,17 @@ class ChessBoardInterface(QWidget):
         self.stateTooltip = StateTooltip(
             "AI 正在思考中", "客官请耐心等待哦~~", self.window())
         self.stateTooltip.move(
-            self.width() - self.stateTooltip.width() - 37, 37)
+            self.window().width() - self.stateTooltip.width() - 63, 60)
         self.stateTooltip.raise_()
         self.stateTooltip.show()
-        self.isAllowHumanAct = False
+        self.isAIThinking = True
         self.aiThread.start()
 
     def mapQPoint2MatIndex(self, pos: QPoint):
         """ 将桌面坐标映射到矩阵下标 """
         n = self.boardLen
-        poses = np.array([[[i*78+37, j*78+37] for j in range(n)]
+        left, top = self.__getMargin()
+        poses = np.array([[[i*self.gridSize+left, j*self.gridSize+top] for j in range(n)]
                          for i in range(n)])
         # Qt坐标系与矩阵的相反
         distances = (poses[:, :, 0]-pos.x())**2+(poses[:, :, 1]-pos.y())**2
@@ -156,8 +166,10 @@ class ChessBoardInterface(QWidget):
         if updateOk:
             isAIChess = color != self.humanColor
             # 矩阵的 axis = 0 方向为 y 轴方向
-            chessPos = QPoint(col, row) * 78 + QPoint(17, 19)
             chess = Chess(color, self, isAIChess)
+            left, top = self.__getMargin()
+            chessPos = QPoint(col, row) * self.gridSize + \
+                QPoint(left-20, top-20)
             chess.show()
             chess.move(chessPos)
             self.chess_list.append(chess)
@@ -174,7 +186,8 @@ class ChessBoardInterface(QWidget):
         self.stateTooltip.setState(True)
         pos = (action//self.boardLen, action % self.boardLen)
         self.putChess(pos, self.AIColor)
-        self.isAllowHumanAct = True
+        self.isAIThinking = False
+        self.stateTooltip = None
 
     def checkGameOver(self):
         """ 检查游戏是否结束 """
@@ -195,17 +208,21 @@ class ChessBoardInterface(QWidget):
         continueGameDiaglog.continueGameSignal.connect(self.restartGame)
         continueGameDiaglog.exec_()
 
-    def __setCursor(self):
+    def __setCursor(self, isChess=True):
         """ 设置光标 """
-        color = 'black' if self.isHumanFirst else 'white'
-        self.setCursor(QCursor(QPixmap(fr'app\resource\images\{color}.png').scaled(
-            20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation)))
+        if isChess:
+            color = 'black' if self.isHumanFirst else 'white'
+            self.setCursor(QCursor(QPixmap(fr'app\resource\images\chess_board_interface\{color}.png').scaled(
+                20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation)))
+        else:
+            self.setCursor(Qt.ArrowCursor)
 
     def restartGame(self):
         """ 重新开始游戏 """
+        if self.isAIThinking:
+            return
         self.restartGameSignal.emit()
         self.chessBoard.clear_board()
-        self.__setCursor()
         for chess in self.chess_list:
             chess.deleteLater()
         self.chess_list.clear()
@@ -215,9 +232,47 @@ class ChessBoardInterface(QWidget):
 
     def updateGameConfig(self, config: dict):
         """ 更新游戏参数 """
-        self.aiThread.mcts.c_puct = config.get('c_puct', 4)
-        self.aiThread.mcts.n_iters = config.get('n_mcts_iters', 1500)
+        self.aiThread.setModel(**config)
         self.isHumanFirst = config.get('is_human_first', True)
         self.isUseGPU = config.get('is_use_gpu', False)
         self.humanColor = ChessBoard.BLACK if self.isHumanFirst else ChessBoard.WHITE
         self.AIColor = ChessBoard.BLACK if not self.isHumanFirst else ChessBoard.WHITE
+
+    def __getMargin(self):
+        """ 获取棋盘边距 """
+        left = (self.width() - (self.boardLen-1)*self.gridSize)//2
+        top = (self.height() - (self.boardLen-1)*self.gridSize)//2
+        return left, top
+
+    def resizeEvent(self, e: QResizeEvent) -> None:
+        """ 移动棋子位置 """
+        # 调整棋子位置
+        size = (self.size()-e.oldSize())/2
+        for chess in self.chess_list:
+            chess.move(chess.pos()+QPoint(size.width(), size.height()))
+        # 调整气泡位置
+        if self.stateTooltip:
+            self.stateTooltip.move(
+                self.window().width() - self.stateTooltip.width() - 63, 60)
+
+    def __getChessRegion(self):
+        """ 返回棋盘区域 """
+        left, top = self.__getMargin()
+        rect = QRect(left-20, top-20, self.width() -
+                     2*left+40, self.height()-2*top+40)
+        return rect
+
+    def mouseMoveEvent(self, e: QMouseEvent):
+        """ 鼠标移动改变光标 """
+        self.__setCursor(e.pos() in self.__getChessRegion())
+
+    def contextMenuEvent(self, e: QContextMenuEvent):
+        """ 显示右击菜单 """
+        self.contextMenu.exec_(e.globalPos())
+
+    def __connectSignalToSlot(self):
+        """ 信号连接到槽 """
+        self.aiThread.searchComplete.connect(self.__searchCompleteSlot)
+        self.contextMenu.restartGameAct.triggered.connect(self.restartGame)
+        self.contextMenu.settingAct.triggered.connect(
+            self.switchToSettingInterfaceSignal)

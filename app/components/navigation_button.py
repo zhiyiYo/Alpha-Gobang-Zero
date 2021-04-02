@@ -51,7 +51,7 @@ class NavigationButton(QPushButton):
         if self.__isSelected:
             painter.setPen(Qt.NoPen)
             painter.setBrush(QBrush(QColor(0, 153, 188)))
-            painter.drawRoundedRect(5, 10, 3, 30, 1, 1)
+            painter.drawRoundedRect(5, 10, 3, 30, 2, 2)
 
     def __setQss(self):
         """ 设置层叠样式 """

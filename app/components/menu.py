@@ -1,23 +1,25 @@
 # coding:utf-8
 
 from app.common.windoweffect import WindowEffect
-from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
-                          QPropertyAnimation, QRect, Qt)
+from PyQt5.QtCore import QEasingCurve, QEvent, QPropertyAnimation, QRect, Qt
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QAction, QApplication, QMenu, QTextEdit, QLineEdit
+from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
 
-class TextEditMenu(QMenu):
-    """ 输入框右击菜单 """
+class ChessBoardMenu(QMenu):
+    """ 棋盘右击菜单 """
 
     def __init__(self, parent):
         super().__init__('', parent)
         self.windowEffect = WindowEffect()
         self.animation = QPropertyAnimation(self, b'geometry')
         # 创建动作
+        self.restartGameAct = QAction(
+            QIcon(r'app\resource\images\chess_board_interface\重新开始.png'), '重新开始', self)
         self.settingAct = QAction(
-            QIcon(r'app\resource\images\menu\设置.png'), '设置', self)
-        self.action_list = [self.settingAct]
+            QIcon(r'app\resource\images\chess_board_interface\设置.png'), '设置', self)
+        self.action_list = [self.restartGameAct, self.settingAct]
+        self.addActions(self.action_list)
         self.__initWidget()
 
     def __initWidget(self):
@@ -27,6 +29,11 @@ class TextEditMenu(QMenu):
         self.setWindowFlags(self.windowFlags() | Qt.NoDropShadowWindowHint)
         self.windowEffect.addShadowEffect(self.winId())
         self.__setQss()
+
+    def event(self, e: QEvent):
+        if e.type() == QEvent.WinIdChange:
+            self.windowEffect.addShadowEffect(self.winId())
+        return QMenu.event(self, e)
 
     def exec_(self, pos):
         width = 176

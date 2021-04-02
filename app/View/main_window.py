@@ -2,7 +2,8 @@
 
 from app.components.framelesswindow import FramelessWindow
 from app.components.pop_up_ani_stacked_widget import PopUpAniStackedWidget
-from PyQt5.QtCore import QPoint, Qt, pyqtSignal
+from PyQt5.QtCore import QPoint, Qt
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, qApp
 
 from .chess_board_interface import ChessBoardInterface
@@ -13,24 +14,25 @@ from .settinginterface import SettingInterface
 class MainWindow(FramelessWindow):
     """ 主界面 """
 
-    updateGameConfigSignal = pyqtSignal(dict)
-
     def __init__(self):
         super().__init__(parent=None)
         self.boardLen = 9
+        self.navigationInterface = NavigationInterface(self)
         self.settingInterface = SettingInterface()
         self.chessBoardInterface = ChessBoardInterface(
             **self.settingInterface.config)
         self.stackedWidget = PopUpAniStackedWidget(self)
-        self.navigationInterface = NavigationInterface(self)
         # 初始化
         self.initWidget()
 
     def initWidget(self):
         """ 初始化界面 """
-        self.setFixedSize(700, 790)
+        # 设置窗口大小
+        self.resize(750, 850)
+        self.setMinimumSize(700, 790)
+        self.setWindowIcon(QIcon(r'app\resource\images\icon\二哈.png'))
         self.navigationInterface.move(0, 40)
-        self.stackedWidget.resize(700, 700)
+        self.stackedWidget.resize(750, 760)
         self.stackedWidget.move(0, 90)
         # 子窗口添加到层叠窗口中
         self.stackedWidget.addWidget(
@@ -51,12 +53,12 @@ class MainWindow(FramelessWindow):
         self.chessBoardInterface.exitGameSignal.connect(self.exitGame)
         self.chessBoardInterface.restartGameSignal.connect(
             self.updateGameConfig)
+        self.chessBoardInterface.switchToSettingInterfaceSignal.connect(
+            self.switchToSettingInterface)
         self.navigationInterface.switchToChessBoardInterfaceSig.connect(
             self.switchToChessBoardInterface)
         self.navigationInterface.switchToSettingInterfaceSig.connect(
             self.switchToSettingInterface)
-        self.updateGameConfigSignal.connect(
-            self.chessBoardInterface.updateGameConfig)
 
     def closeEvent(self, e):
         self.settingInterface.saveConfig()
@@ -69,18 +71,28 @@ class MainWindow(FramelessWindow):
 
     def switchToChessBoardInterface(self):
         """ 切换到棋盘界面 """
-        self.stackedWidget.setCurrentWidget(self.chessBoardInterface, True)
+        self.stackedWidget.setCurrentWidget(
+            self.chessBoardInterface, True, False)
 
     def switchToSettingInterface(self):
         """ 切换到设置界面 """
         self.stackedWidget.setCurrentWidget(self.settingInterface, False)
+        if self.sender() is self.chessBoardInterface:
+            self.navigationInterface.navigationMenu.setSelectedButton(1)
 
     def resizeEvent(self, e):
         super().resizeEvent(e)
         self.stackedWidget.resize(self.width(), self.height()-90)
         self.navigationInterface.resize(
             self.navigationInterface.width(), self.height()-40)
+        self.centerChessboard()
 
     def updateGameConfig(self):
         """ 更新游戏配置 """
-        self.updateGameConfigSignal.emit(self.settingInterface.config)
+        self.chessBoardInterface.updateGameConfig(self.settingInterface.config)
+
+    def centerChessboard(self):
+        """ 居中棋盘 """
+        self.chessBoardInterface.move(
+            (self.width()-self.chessBoardInterface.width())//2,
+            (self.height()-self.chessBoardInterface.height())//2-45)

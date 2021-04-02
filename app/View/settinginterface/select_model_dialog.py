@@ -2,6 +2,7 @@
 
 import os
 
+from app.common.model_utils import testModel
 from app.components.sub_panel_frame import SubPanelFrame
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QColor, QPainter, QPen, QPixmap
@@ -56,9 +57,10 @@ class SubSelectModelDialog(QWidget):
         self.addModelCard = AddModelCard(self)
         self.completeButton = QPushButton("完成", self)
         self.titleLabel = QLabel('从本地模型库选择阿尔法狗', self)
-        self.subTitleLabel = QLabel('', self)
+        self.subTitleLabel = QLabel('当前未使用任何模型', self)
         if self.selectedModel:
-            self.subTitleLabel.setText("现在我们正在使用这个模型")
+            tip = '' if testModel(selectedModel) else '(模型不可用)'
+            self.subTitleLabel.setText("现在我们正在使用这个模型"+tip)
             self.modelCard = ModelCard(self.selectedModel, self)
             # 在显示删除文件卡对话框前加个延时
             self.modelCard.clicked.connect(self.deleteModelTimer.start)
@@ -101,16 +103,22 @@ class SubSelectModelDialog(QWidget):
     def showFileDialog(self):
         """ 定时器溢出时显示文件对话框 """
         self.selectModelTimer.stop()
-        path, _ = QFileDialog.getOpenFileName(self, "选择模型", "./")
+        path, _ = QFileDialog.getOpenFileName(
+            self, "选择模型", "./model", '模型文件 (*.pth; *.pt; *.pkl);;所有文件 (*.*)')
         if path:
             self.addModelCard.hide()
+            # 检验模型是否可用
+            isModelOk = testModel(path)
             path = path.replace("/", "\\")
-            self.selectedModel = path
             self.modelCard = ModelCard(path, self)
             self.modelCard.move(36, 130)
             self.modelCard.clicked.connect(self.deleteModelTimer.start)
-            self.subTitleLabel.setText("现在我们正在使用这个模型")
+            self.selectedModel = path
+            # 设置提示并根据模型是否可用来设置按钮可用性
+            tip = '' if isModelOk else '(模型不可用)'
+            self.subTitleLabel.setText("现在我们正在使用这个模型" + tip)
             self.subTitleLabel.adjustSize()
+            self.completeButton.setEnabled(isModelOk)
 
     def showDeleteModelPanel(self):
         """ 显示删除模型对话框 """
@@ -125,7 +133,7 @@ class SubSelectModelDialog(QWidget):
         """ 删除选中的模型卡 """
         self.deleteModelDialog.deleteLater()
         self.modelCard.deleteLater()
-        self.subTitleLabel.setText('')
+        self.subTitleLabel.setText('当前未使用任何模型')
         self.addModelCard.show()
         self.selectedModel = None
 

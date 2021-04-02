@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QWidget
 from win32 import win32api, win32gui
 from win32.lib import win32con
 
-from app.components.titilebar import TitleBar
+from app.components.titlebar import TitleBar
 from app.common.windoweffect import WindowEffect, MINMAXINFO, NCCALCSIZE_PARAMS
 
 
@@ -25,7 +25,6 @@ class FramelessWindow(QWidget):
         self.setWindowFlags(Qt.FramelessWindowHint)
         # 设置亚克力效果和窗口动画
         self.setStyleSheet('background:transparent')
-        # self.windowEffect.addShadowEffect(self.winId())
         self.windowEffect.addWindowAnimation(self.winId())
         self.windowEffect.setAcrylicEffect(self.winId(), 'F2F2F2F2')
         self.resize(500, 500)
@@ -40,12 +39,40 @@ class FramelessWindow(QWidget):
         return windowPlacement[1] == win32con.SW_MAXIMIZE
 
     def resizeEvent(self, e):
+        super().resizeEvent(e)
         self.titleBar.resize(self.width(), 40)
+        # 更新最大化按钮图标
+        if self.isWindowMaximized(int(self.winId())):
+            self.titleBar.maxBt.setMaxState(True)
 
     def nativeEvent(self, eventType, message):
         """ 处理windows消息 """
         msg = MSG.from_address(message.__int__())
-        if msg.message == win32con.WM_NCCALCSIZE:
+        if msg.message == win32con.WM_NCHITTEST:
+            xPos = win32api.LOWORD(msg.lParam) - self.frameGeometry().x()
+            yPos = win32api.HIWORD(msg.lParam) - self.frameGeometry().y()
+            w, h = self.width(), self.height()
+            lx = xPos < self.BORDER_WIDTH
+            rx = xPos + 9 > w - self.BORDER_WIDTH
+            ty = yPos < self.BORDER_WIDTH
+            by = yPos > h - self.BORDER_WIDTH
+            if lx and ty:
+                return True, win32con.HTTOPLEFT
+            elif rx and by:
+                return True, win32con.HTBOTTOMRIGHT
+            elif rx and ty:
+                return True, win32con.HTTOPRIGHT
+            elif lx and by:
+                return True, win32con.HTBOTTOMLEFT
+            elif ty:
+                return True, win32con.HTTOP
+            elif by:
+                return True, win32con.HTBOTTOM
+            elif lx:
+                return True, win32con.HTLEFT
+            elif rx:
+                return True, win32con.HTRIGHT
+        elif msg.message == win32con.WM_NCCALCSIZE:
             if self.isWindowMaximized(msg.hWnd):
                 self.monitorNCCALCSIZE(msg)
             return True, 0

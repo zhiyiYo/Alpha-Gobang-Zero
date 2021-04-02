@@ -31,13 +31,6 @@ class RolloutMCTS:
         chess_board: ChessBoard
             棋盘
         """
-        # 更新根节点
-        # pre_action = chess_board.previous_action
-        # if pre_action and pre_action in self.root.children:
-        #     self.root = self.root.children[pre_action]
-        #     self.root.parent = None
-        self.root = Node(1, self.c_puct, parent=None)
-
         for i in range(self.n_iters):
             # 拷贝一个棋盘用来模拟
             board = chess_board.copy()
@@ -61,9 +54,7 @@ class RolloutMCTS:
         # 根据子节点的访问次数来选择动作
         action = max(self.root.children.items(), key=lambda i: i[1].N)[0]
         # 更新根节点
-        # self.root = Node(prior_prob=1)
-        self.root = self.root.children[action]
-        self.root.parent = None
+        self.root = Node(prior_prob=1)
         return action
 
     def __default_policy(self, chess_board: ChessBoard):

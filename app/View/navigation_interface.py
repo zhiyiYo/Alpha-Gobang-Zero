@@ -14,7 +14,7 @@ class NavigationInterface(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.title = QLabel('游戏', self)
+        self.title = QLabel('棋盘', self)
         self.navigationButton = QToolButton(self)
         self.navigationMenu = NavigationMenu(self)
         # 初始化界面
@@ -43,8 +43,8 @@ class NavigationInterface(QWidget):
         self.navigationButton.clicked.connect(self.__showNavigationMenu)
         self.navigationMenu.navigationButton.clicked.connect(
             self.navigationMenu.aniHide)
-        self.navigationMenu.gameButton.clicked.connect(
-            self.__gameButtonClickedSlot)
+        self.navigationMenu.boardButton.clicked.connect(
+            self.__boardButtonClickedSlot)
         self.navigationMenu.settingButton.clicked.connect(
             self.__settingButtonClickedSlot)
 
@@ -53,11 +53,10 @@ class NavigationInterface(QWidget):
         self.navigationMenu.move(self.mapToGlobal(QPoint(0, 0)))
         self.navigationMenu.aniShow()
 
-    def __gameButtonClickedSlot(self):
-        """ 游戏按钮点击槽函数 """
-        self.navigationMenu.settingButton.setSelected(False)
-        self.navigationMenu.gameButton.setSelected(True)
-        self.title.setText('游戏')
+    def __boardButtonClickedSlot(self):
+        """ 棋盘按钮点击槽函数 """
+        self.navigationMenu.setSelectedButton(0)
+        self.title.setText('棋盘')
         self.switchToChessBoardInterfaceSig.emit()
         self.navigationMenu.aniHide()
         self.navigationButton.setProperty('state', 'normal')
@@ -65,8 +64,7 @@ class NavigationInterface(QWidget):
 
     def __settingButtonClickedSlot(self):
         """ 设置按钮点击槽函数 """
-        self.navigationMenu.gameButton.setSelected(False)
-        self.navigationMenu.settingButton.setSelected(True)
+        self.navigationMenu.setSelectedButton(1)
         self.title.setText('设置')
         self.switchToSettingInterfaceSig.emit()
         self.navigationMenu.aniHide()
@@ -85,10 +83,11 @@ class NavigationMenu(QWidget):
         super().__init__(parent=parent)
         # 创建按钮
         self.navigationButton = QToolButton(self)
-        self.gameButton = NavigationButton(
-            '游戏', r'app\resource\images\navigation_menu\游戏.png', True, self)
+        self.boardButton = NavigationButton(
+            '棋盘', r'app\resource\images\navigation_menu\棋盘.png', True, self)
         self.settingButton = NavigationButton(
             '设置', r'app\resource\images\navigation_menu\设置.png', False, self)
+        self.button_list = [self.boardButton, self.settingButton]
         # 实例化窗口特效和动画
         self.windowEffect = WindowEffect()
         self.__ani = QPropertyAnimation(self, b'geometry')
@@ -100,8 +99,8 @@ class NavigationMenu(QWidget):
         self.resize(320, 755)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowFlags(Qt.NoDropShadowWindowHint | Qt.Popup)
-        self.windowEffect.setAcrylicEffect(self.winId(), "F2F2F299", False)
-        self.gameButton.move(0, 50)
+        self.windowEffect.setAcrylicEffect(self.winId(), "E9ECED99", False)
+        self.boardButton.move(0, 50)
         self.settingButton.move(0, self.height()-60)
         self.navigationButton.setFixedSize(50, 50)
         self.navigationButton.setIcon(
@@ -110,7 +109,7 @@ class NavigationMenu(QWidget):
     def aniShow(self):
         """ 动画显示 """
         super().show()
-        self.__ani.setStartValue(QRect(self.x(), self.y(), 1, self.height()))
+        self.__ani.setStartValue(QRect(self.x(), self.y(), 50, self.height()))
         self.__ani.setEndValue(QRect(self.x(), self.y(), 320, self.height()))
         self.__ani.setEasingCurve(QEasingCurve.InOutQuad)
         self.__ani.setDuration(85)
@@ -119,7 +118,7 @@ class NavigationMenu(QWidget):
     def aniHide(self):
         """ 动画隐藏 """
         self.__ani.setStartValue(QRect(self.x(), self.y(), 320, self.height()))
-        self.__ani.setEndValue(QRect(self.x(), self.y(), 1, self.height()))
+        self.__ani.setEndValue(QRect(self.x(), self.y(), 50, self.height()))
         self.__ani.finished.connect(self.__hideAniFinishedSlot)
         self.__ani.setDuration(85)
         self.__ani.start()
@@ -137,3 +136,8 @@ class NavigationMenu(QWidget):
         painter.setPen(pen)
         painter.drawLine(15, self.settingButton.y() - 1,
                          self.width() - 15, self.settingButton.y() - 1)
+
+    def setSelectedButton(self, index: int):
+        """ 设置选中的按钮 """
+        for i, button in enumerate(self.button_list):
+            button.setSelected(i == index)
