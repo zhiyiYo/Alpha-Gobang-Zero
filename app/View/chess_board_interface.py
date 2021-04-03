@@ -125,7 +125,7 @@ class ChessBoardInterface(QWidget):
     def getAIAction(self):
         """ 获取 AI 的动作 """
         self.stateTooltip = StateTooltip(
-            "AI 正在思考中", "客官请耐心等待哦~~", self.window())
+            "AI 正在思考中", "前辈请耐心等待哦~~", self.window())
         self.stateTooltip.move(
             self.window().width() - self.stateTooltip.width() - 63, 60)
         self.stateTooltip.raise_()
@@ -198,9 +198,9 @@ class ChessBoardInterface(QWidget):
             self.isEnableAI = True  # 解锁
             return
         if winner == self.humanColor:
-            msg = '恭喜客官赢得比赛，AI 表示不服，要不再战一局?'
+            msg = '恭喜前辈赢得比赛，AI 表示不服，要不再战一局?'
         elif winner == self.AIColor:
-            msg = '客官别气馁，可以再试一次哦~~'
+            msg = '前辈别气馁，可以再试一次哦~~'
         else:
             msg = '平局！果然棋盘太小，施展不开，要不再战一局？'
         continueGameDiaglog = ContinueGameDialog('游戏结束', msg, self.window())

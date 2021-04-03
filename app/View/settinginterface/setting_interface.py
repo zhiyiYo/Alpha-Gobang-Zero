@@ -146,7 +146,7 @@ class SettingInterface(QWidget):
         self.mctsIterTimeSlider.valueChanged.connect(
             self.__adjustMctsIterTimer)
         self.giveIssueButton.clicked.connect(lambda: QDesktopServices.openUrl(
-            QUrl('https://github.com/zhiyiYo/Alpha-Gobang-Zero')))
+            QUrl('https://github.com/zhiyiYo/Alpha-Gobang-Zero/issues')))
 
     def __modelChangedSlot(self, model: str):
         """ 模型改变信号槽函数 """

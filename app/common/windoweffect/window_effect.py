@@ -20,6 +20,12 @@ from .c_structures import (
 class WindowEffect:
     """ 调用windows api实现窗口效果 """
 
+    DRAW_LEFT_BORDER = 0x20
+    DRAW_TOP_BOARDER = 0x40
+    DRAW_RIGHT_BOARDER = 0x80
+    DRAW_BOTTOM_BOARDER = 0x100
+    DRAW_ALL_BOARDER = 0x20 | 0x40 | 0x80 | 0x100
+
     def __init__(self):
         # 调用api
         self.user32 = WinDLL("user32")
@@ -45,7 +51,8 @@ class WindowEffect:
         self.winCompAttrData.SizeOfData = sizeof(self.accentPolicy)
         self.winCompAttrData.Data = pointer(self.accentPolicy)
 
-    def setAcrylicEffect(self, hWnd, gradientColor: str = "F2F2F230", isEnableShadow: bool = True, animationId: int = 0):
+    def setAcrylicEffect(self, hWnd, gradientColor: str = "F2F2F230", isEnableShadow: bool = True,
+                         animationId: int = 0, shadowPos=DRAW_ALL_BOARDER):
         """ 给窗口开启Win10的亚克力效果
 
         Parameters
@@ -63,6 +70,14 @@ class WindowEffect:
 
         animationId: int
             控制磨砂动画
+
+        shadowPos: int
+            窗口阴影位置，可以是以下几种的任何一种或者他们的组合，
+            例如 `WindowEffect.DRAW_LEFT_BORDER | WindowEffect.DRAW_TOP_BORDER`:
+            * `WindowEffect.DRAW_LEFT_BORDER`: 左侧阴影
+            * `WindowEffect.DRAW_TOP_BORDER`: 上侧阴影
+            * `WindowEffect.DRAW_RIGHT_BORDER`: 右侧阴影
+            * `WindowEffect.DRAW_BOTTOM_BORDER`: 下侧阴影
         """
         # 亚克力混合色
         gradientColor = (
@@ -75,8 +90,7 @@ class WindowEffect:
         # 磨砂动画
         animationId = DWORD(animationId)
         # 窗口阴影
-        accentFlags = DWORD(0x20 | 0x40 | 0x80 |
-                            0x100) if isEnableShadow else DWORD(0)
+        accentFlags = DWORD(shadowPos) if isEnableShadow else DWORD(0)
         self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_ENABLE_ACRYLICBLURBEHIND.value[
             0
         ]

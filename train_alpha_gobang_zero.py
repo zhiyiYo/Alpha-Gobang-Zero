@@ -3,7 +3,7 @@ from alphazero.train import TrainModel
 
 
 train_config = {
-    'lr': 0.01,
+    'lr': 1e-4,
     'c_puct': 3,
     'board_len': 9,
     'batch_size': 500,

@@ -1,1 +1,1 @@
-{"c_puct": 5.0, "is_use_gpu": true, "n_mcts_iters": 2000, "is_human_first": true, "model": "model\\best_policy_value_net.pth"}
+{"c_puct": 5.0, "is_use_gpu": true, "n_mcts_iters": 1990, "is_human_first": true, "model": "model\\best_policy_value_net.pth"}
