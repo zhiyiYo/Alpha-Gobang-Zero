@@ -21,18 +21,21 @@
 
 2. 安装 `PyTorch`，具体操作参见 [博客](https://blog.csdn.net/qq_23013309/article/details/103965619)；
 
-3. 训练模型:
 
-    ```shell
-    python train_alpha_gobang_zero.py
-    ```
-
-4. 开始游戏:
+3. 开始游戏:
 
     ```shell
     python alpha_gobang_zero.py
     ```
+## 训练模型
+* 开始训练:
 
+    ```shell
+    python train_alpha_gobang_zero.py
+    ```
+* 误差曲线
+
+  ![误差曲线](docs/screenshot/误差曲线.png)
 ## Reference
 * [Mastering the game of Go without human knowledge](https://www.nature.com/articles/nature24270.epdf?author_access_token=VJXbVjaSHxFoctQQ4p2k4tRgN0jAjWel9jnR3ZoTv0PVW4gB86EEpGqTRDtpIz-2rmo8-KG06gqVobU5NSCFeHILHcVFUeMsbvwS-lxjqQGg98faovwjxeTUgZAUMnRQ)
 * [Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm](https://arxiv.org/abs/1712.01815)
