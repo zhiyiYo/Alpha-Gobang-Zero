@@ -1,7 +1,7 @@
 # coding:utf-8
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QPixmap, QFont
+from PyQt5.QtGui import QPainter, QPixmap, QFont, QFontMetrics
 
 from .folding_window import FoldingWindow
 
@@ -9,10 +9,10 @@ from .folding_window import FoldingWindow
 class ModelCard(FoldingWindow):
     """ 显示当前使用的模型 """
 
-    def __init__(self, folderPath: str, parent=None):
+    def __init__(self, modelPath: str, parent=None):
         super().__init__(parent)
-        self.folderPath = folderPath
-        self.folderName = self.folderPath.split("\\")[-1]
+        self.modelPath = modelPath
+        self.modelName = self.modelPath.split("\\")[-1]
         self.image = QPixmap(r"app\resource\images\setting_interface\黑色叉号.png")
         self.show()
 
@@ -55,7 +55,15 @@ class ModelCard(FoldingWindow):
 
     def paintText(self, painter, x1, fontSize1, x2, fontSize2):
         """ 绘制文字 """
-        painter.setFont(QFont("Microsoft YaHei", fontSize1, 75))
-        painter.drawText(x1, 37, self.folderName)
-        painter.setFont(QFont("Microsoft YaHei", fontSize2))
-        painter.drawText(x2, 46, self.width() - 24, 23, Qt.AlignLeft, self.folderPath)
+        # 绘制模型名字
+        font = QFont("Microsoft YaHei", fontSize1, 75)
+        painter.setFont(font)
+        name = QFontMetrics(font).elidedText(
+            self.modelName, Qt.ElideRight, self.width()-60)
+        painter.drawText(x1, 37, name)
+        # 绘制模型路径
+        font = QFont("Microsoft YaHei", fontSize1)
+        painter.setFont(font)
+        path = QFontMetrics(font).elidedText(
+            self.modelPath, Qt.ElideRight, self.width()-30)
+        painter.drawText(x2, 46, self.width() - 20, 23, Qt.AlignLeft, path)

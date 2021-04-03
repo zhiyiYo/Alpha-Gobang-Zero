@@ -66,8 +66,8 @@ class PolicyValueLoss(nn.Module):
 class TrainModel:
     """ 训练模型 """
 
-    def __init__(self, board_len=9, lr=0.01, n_self_plays=1500, n_mcts_iters=500, n_feature_planes=4, batch_size=32,
-                 start_train_size=2000, check_frequency=100, n_test_games=10, c_puct=4, is_use_gpu=True, **kwargs):
+    def __init__(self, board_len=9, lr=0.01, n_self_plays=1500, n_mcts_iters=500, n_feature_planes=4, batch_size=500,
+                 start_train_size=500, check_frequency=100, n_test_games=10, c_puct=4, is_use_gpu=True, **kwargs):
         """
         Parameters
         ----------

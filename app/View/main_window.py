@@ -30,6 +30,7 @@ class MainWindow(FramelessWindow):
         # 设置窗口大小
         self.resize(750, 850)
         self.setMinimumSize(700, 790)
+        self.setWindowTitle('Alpha Gobang Zero')
         self.setWindowIcon(QIcon(r'app\resource\images\icon\二哈.png'))
         self.navigationInterface.move(0, 40)
         self.stackedWidget.resize(750, 760)
