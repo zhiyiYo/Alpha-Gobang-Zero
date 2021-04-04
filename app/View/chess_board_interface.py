@@ -237,6 +237,7 @@ class ChessBoardInterface(QWidget):
         self.isUseGPU = config.get('is_use_gpu', False)
         self.humanColor = ChessBoard.BLACK if self.isHumanFirst else ChessBoard.WHITE
         self.AIColor = ChessBoard.BLACK if not self.isHumanFirst else ChessBoard.WHITE
+        self.__setCursor()
 
     def __getMargin(self):
         """ 获取棋盘边距 """

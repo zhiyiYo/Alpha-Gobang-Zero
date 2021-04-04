@@ -5,7 +5,7 @@ import time
 
 import torch
 import torch.nn.functional as F
-from torch import nn, optim
+from torch import nn, optim, cuda
 from torch.optim.lr_scheduler import MultiStepLR
 from torch.utils.data import DataLoader
 
@@ -112,7 +112,8 @@ class TrainModel:
         self.n_mcts_iters = n_mcts_iters
         self.check_frequency = check_frequency
         self.start_train_size = start_train_size
-        self.device = torch.device('cuda:0' if is_use_gpu else 'cpu')
+        self.device = torch.device(
+            'cuda:0' if is_use_gpu and cuda.is_available() else 'cpu')
         self.chess_board = ChessBoard(board_len, n_feature_planes)
         # 实例化策略-价值网络和蒙特卡洛搜索树
         self.policy_value_net = self.__get_policy_value_net()
