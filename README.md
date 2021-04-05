@@ -37,15 +37,18 @@
     ```shell
     python alpha_gobang_zero.py
     ```
+
 ## 训练模型
 * 开始训练:
 
     ```shell
     python train_alpha_gobang_zero.py
     ```
+    **注意**：这将在上一个模型的基础上接着训练，如果想要重新训练一个模型，请将 `model` 文件夹中的 `best_policy_value_net.pth` 和 `last_policy_value_net*` 删掉，并设置 `train_config` 的 `lr` 为 `0.01`
 * 误差曲线
 
   ![误差曲线](docs/screenshot/误差曲线.png)
+
 ## 参考文献
 * [Mastering the game of Go without human knowledge](https://www.nature.com/articles/nature24270.epdf?author_access_token=VJXbVjaSHxFoctQQ4p2k4tRgN0jAjWel9jnR3ZoTv0PVW4gB86EEpGqTRDtpIz-2rmo8-KG06gqVobU5NSCFeHILHcVFUeMsbvwS-lxjqQGg98faovwjxeTUgZAUMnRQ)
 * [Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm](https://arxiv.org/abs/1712.01815)
