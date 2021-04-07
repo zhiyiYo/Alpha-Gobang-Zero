@@ -1,14 +1,52 @@
-# Alpha Gobang Zero
-基于自对弈强化学习的五子棋机器人。
+<p align="center">
+  <img width="10%" align="center" src="app/resource/images/icon/二哈.png">
+</p>
+  <h1 align="center">
+  Alpha Gobang Zero
+</h1>
 
-## 界面
-* 快乐游戏
+<p align="center">
+   基于自对弈强化学习的五子棋机器人
+</p>
 
-  ![游戏界面](docs/screenshot/游戏界面.png)
-* 配置游戏
+<p align="center">
+  <a style="text-decoration:none">
+    <img src="https://img.shields.io/badge/Version-v1.0-blue.svg?color=00B16A&style=flat-square"/>
+  </a>
 
+  <a style="text-decoration:none">
+    <img src="https://img.shields.io/badge/Python-3.8+-blue.svg?color=00B16A&style=flat-square" />
+  </a>
 
-  ![设置界面](docs/screenshot/设置界面.png)
+  <a style="text-decoration:none">
+    <img src="https://img.shields.io/badge/PyTorch-1.8.1-blue?style=flat-square&color=00B16A" />
+  </a>
+
+  <a style="text-decoration:none">
+    <img src="https://img.shields.io/badge/PyQt-5.13.2-blue?style=flat-square&color=00B16A" />
+  </a>
+
+  <a style="text-decoration:none">
+    <img src="https://img.shields.io/badge/OS-Windows%2010-blue?style=flat-square&color=00B16A" />
+  </a>
+</p>
+
+<div align="center">
+<img border="1" width="" height="" alt="名称" src="docs/screenshot/游戏界面.png" />
+<img border="1" width="" height="" alt="名称" src="docs/screenshot/设置界面.png" />
+</div>
+
+<details open="open">
+  <summary>Table of Contents</summary>
+  <ol>
+    <li><a href="#策略价值网络">策略价值网络</a></li>
+    <li><a href="#快速开始">快速开始</a></li>
+    <li><a href="#训练模型">训练模型</a></li>
+    <li><a href="#参考文献">参考文献</a></li>
+    <li><a href="#证书">证书</a></li>
+  </ol>
+</details>
+
 
 ## 策略-价值网络
 * 网络组成 (各个模块的具体信息参见 [项目大纲](docs/项目大纲.md))
@@ -52,3 +90,29 @@
 ## 参考文献
 * [Mastering the game of Go without human knowledge](https://www.nature.com/articles/nature24270.epdf?author_access_token=VJXbVjaSHxFoctQQ4p2k4tRgN0jAjWel9jnR3ZoTv0PVW4gB86EEpGqTRDtpIz-2rmo8-KG06gqVobU5NSCFeHILHcVFUeMsbvwS-lxjqQGg98faovwjxeTUgZAUMnRQ)
 * [Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm](https://arxiv.org/abs/1712.01815)
+
+## 证书
+```
+MIT License
+
+Copyright (c) 2021 Zhengzhi Huang
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+```
