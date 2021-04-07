@@ -32,14 +32,14 @@
 </p>
 
 <div align="center">
-<img border="1" width="" height="" alt="名称" src="docs/screenshot/游戏界面.png" />
-<img border="1" width="" height="" alt="名称" src="docs/screenshot/设置界面.png" />
+<img src="docs/screenshot/游戏界面.png" />
+<img src="docs/screenshot/设置界面.png" />
 </div>
 
 <details open="open">
   <summary>Table of Contents</summary>
   <ol>
-    <li><a href="#策略价值网络">策略价值网络</a></li>
+    <li><a href="#策略-价值网络">策略-价值网络</a></li>
     <li><a href="#快速开始">快速开始</a></li>
     <li><a href="#训练模型">训练模型</a></li>
     <li><a href="#参考文献">参考文献</a></li>
