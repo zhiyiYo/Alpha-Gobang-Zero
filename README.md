@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="10%" align="center" src="app/resource/images/icon/二哈.png">
+  <img width="12%" align="center" src="app/resource/images/icon/二哈.png" alt="logo">
 </p>
   <h1 align="center">
   Alpha Gobang Zero
@@ -11,33 +11,33 @@
 
 <p align="center">
   <a style="text-decoration:none">
-    <img src="https://img.shields.io/badge/Version-v1.0-blue.svg?color=00B16A&style=flat-square"/>
+    <img src="https://img.shields.io/badge/Version-v1.0-blue.svg?color=00B16A" alt="Version v1.0"/>
   </a>
 
   <a style="text-decoration:none">
-    <img src="https://img.shields.io/badge/Python-3.8+-blue.svg?color=00B16A&style=flat-square" />
+    <img src="https://img.shields.io/badge/Python-3.8.6-blue.svg?color=00B16A" alt="Python 3.8.6"/>
   </a>
 
   <a style="text-decoration:none">
-    <img src="https://img.shields.io/badge/PyTorch-1.8.1-blue?style=flat-square&color=00B16A" />
+    <img src="https://img.shields.io/badge/PyTorch-1.8.1-blue?color=00B16A" alt="PyTorch 1.8.1"/>
   </a>
 
   <a style="text-decoration:none">
-    <img src="https://img.shields.io/badge/PyQt-5.13.2-blue?style=flat-square&color=00B16A" />
+    <img src="https://img.shields.io/badge/PyQt-5.13.2-blue?color=00B16A" alt="PyQt 5.13.2"/>
   </a>
 
   <a style="text-decoration:none">
-    <img src="https://img.shields.io/badge/OS-Windows%2010-blue?style=flat-square&color=00B16A" />
+    <img src="https://img.shields.io/badge/OS-Windows%2010-blue?color=00B16A" alt="OS Window10"/>
   </a>
 </p>
 
 <div align="center">
-<img src="docs/screenshot/游戏界面.png" />
-<img src="docs/screenshot/设置界面.png" />
+<img src="docs/screenshot/游戏界面.png" alt="游戏界面" width="75%"/>
+<img src="docs/screenshot/设置界面.png" alt="设置界面" width="75%"/>
 </div>
 
 <details open="open">
-  <summary>Table of Contents</summary>
+  <summary>目录</summary>
   <ol>
     <li><a href="#策略-价值网络">策略-价值网络</a></li>
     <li><a href="#快速开始">快速开始</a></li>
