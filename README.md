@@ -32,20 +32,11 @@
 </p>
 
 <div align="center">
-<img src="docs/screenshot/游戏界面.png" alt="游戏界面" width="75%"/>
-<img src="docs/screenshot/设置界面.png" alt="设置界面" width="75%"/>
+<img src="docs/screenshot/游戏界面.png" alt="游戏界面" width="75%" style="box-shadow: 0 1px 15px rgba(27, 31, 35, .15)"/>
+<br>
+<img src="docs/screenshot/设置界面.png" alt="设置界面" width="75%" style="box-shadow: 0 1px 15px rgba(27, 31, 35, .15)"/>
 </div>
 
-<details open="open">
-  <summary>目录</summary>
-  <ol>
-    <li><a href="#策略-价值网络">策略-价值网络</a></li>
-    <li><a href="#快速开始">快速开始</a></li>
-    <li><a href="#训练模型">训练模型</a></li>
-    <li><a href="#参考文献">参考文献</a></li>
-    <li><a href="#证书">证书</a></li>
-  </ol>
-</details>
 
 
 ## 策略-价值网络
