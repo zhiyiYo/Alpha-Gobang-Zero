@@ -43,8 +43,8 @@ class FramelessWindow(QWidget):
         super().resizeEvent(e)
         self.titleBar.resize(self.width(), 40)
         # 更新最大化按钮图标
-        if self.isWindowMaximized(int(self.winId())):
-            self.titleBar.maxBt.setMaxState(True)
+        self.titleBar.maxBt.setMaxState(
+                self.isWindowMaximized(int(self.winId())))
 
     def nativeEvent(self, eventType, message):
         """ 处理windows消息 """
