@@ -55,8 +55,6 @@ class WindowEffect:
                          animationId: int = 0, shadowPos=DRAW_ALL_BOARDER):
         """ 给窗口开启Win10的亚克力效果
 
-        Parameters
-        ----------
         Parameter
         ----------
         hWnd: int or `sip.voidptr`
