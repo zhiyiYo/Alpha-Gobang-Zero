@@ -19,5 +19,3 @@ demo.py
 
 # 忽略备份文件夹
 backup/
-
-utils

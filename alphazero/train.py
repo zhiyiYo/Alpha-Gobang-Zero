@@ -29,8 +29,11 @@ def save_model(train_func):
             torch.save(train_pipe_line.policy_value_net, path)
             print(f'🎉 训练结束，已将当前模型保存到 {os.path.join(os.getcwd(), path)}')
             # 保存数据
-            with open('log\\train_losses.json',  'w', encoding='utf-8') as f:
+            with open('log\\train_losses.json', 'w', encoding='utf-8') as f:
                 json.dump(train_pipe_line.train_losses, f)
+            if train_pipe_line.is_save_game:
+                with open('log\\games.json', 'w', encoding='utf-8') as f:
+                    json.dump(train_pipe_line.games, f)
     return wrapper
 
 
@@ -66,8 +69,9 @@ class PolicyValueLoss(nn.Module):
 class TrainModel:
     """ 训练模型 """
 
-    def __init__(self, board_len=9, lr=0.01, n_self_plays=1500, n_mcts_iters=500, n_feature_planes=4, batch_size=500,
-                 start_train_size=500, check_frequency=100, n_test_games=10, c_puct=4, is_use_gpu=True, **kwargs):
+    def __init__(self, board_len=9, lr=0.01, n_self_plays=1500, n_mcts_iters=500,
+                 n_feature_planes=4, batch_size=500, start_train_size=500, check_frequency=100,
+                 n_test_games=10, c_puct=4, is_use_gpu=True, is_save_game=False, **kwargs):
         """
         Parameters
         ----------
@@ -103,6 +107,9 @@ class TrainModel:
 
         is_use_gpu: bool
             是否使用 GPU
+
+        is_save_game: bool
+            是否保存自对弈的棋谱
         """
         self.c_puct = c_puct
         self.is_use_gpu = is_use_gpu
@@ -110,6 +117,7 @@ class TrainModel:
         self.n_self_plays = n_self_plays
         self.n_test_games = n_test_games
         self.n_mcts_iters = n_mcts_iters
+        self.is_save_game = is_save_game
         self.check_frequency = check_frequency
         self.start_train_size = start_train_size
         self.device = torch.device(
@@ -123,11 +131,13 @@ class TrainModel:
         self.optimizer = optim.Adam(
             self.policy_value_net.parameters(), lr=lr, weight_decay=1e-4)
         self.criterion = PolicyValueLoss()
-        self.lr_scheduler = MultiStepLR(self.optimizer, [400, 800], gamma=0.1)
+        self.lr_scheduler = MultiStepLR(
+            self.optimizer, [1500, 2500], gamma=0.1)
         # 实例化数据集
         self.dataset = SelfPlayDataSet(board_len)
-        # 记录误差
-        self.train_losses = self.__load_losses()
+        # 记录数据
+        self.train_losses = self.__load_data('log\\train_losses.json')
+        self.games = self.__load_data('log\\games.json')
 
     def __self_play(self):
         """ 自我博弈一局
@@ -144,13 +154,14 @@ class TrainModel:
         self.policy_value_net.eval()
         self.chess_board.clear_board()
         pi_list, feature_planes_list, players = [], [], []
-
+        action_list = []
         # 开始一局游戏
         while True:
             action, pi = self.mcts.get_action(self.chess_board)
             # 保存每一步的数据
             feature_planes_list.append(self.chess_board.get_feature_planes())
             players.append(self.chess_board.current_player)
+            action_list.append(action)
             pi_list.append(pi)
             self.chess_board.do_action(action)
             # 判断游戏是否结束
@@ -166,6 +177,9 @@ class TrainModel:
         self.mcts.reset_root()
 
         # 返回数据
+        if self.is_save_game:
+            self.games.append(action_list)
+
         self_play_data = SelfPlayData(
             pi_list=pi_list, z_list=z_list, feature_planes_list=feature_planes_list)
         return self_play_data
@@ -277,13 +291,12 @@ class TrainModel:
                                  is_use_gpu=self.is_use_gpu).to(self.device)
         return net
 
-    def __load_losses(self):
+    def __load_data(self, path: str):
         """ 载入历史损失数据 """
-        path = 'log\\train_losses.json'
-        train_losses = []
-        if os.path.exists(path):
+        data = []
+        try:
             with open(path, encoding='utf-8') as f:
-                train_losses = json.load(f)
-        else:
+                data = json.load(f)
+        except:
             os.makedirs('log', exist_ok=True)
-        return train_losses
+        return data

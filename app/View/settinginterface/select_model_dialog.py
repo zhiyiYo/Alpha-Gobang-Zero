@@ -3,13 +3,13 @@
 import os
 
 from app.common.model_utils import testModel
-from app.components.sub_panel_frame import SubPanelFrame
+from app.components.dialog.delete_model_dialog import DeleteModelDialog
+from app.components.dialog.sub_panel_frame import SubPanelFrame
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QColor, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import (QFileDialog, QGraphicsDropShadowEffect, QLabel,
                              QPushButton, QWidget)
 
-from .delete_model_dialog import DeleteModelDialog
 from .folding_window import FoldingWindow
 from .model_card import ModelCard
 

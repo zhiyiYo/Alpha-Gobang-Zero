@@ -1,5 +1,5 @@
 # coding:utf-8
-from app.components.three_state_button import ThreeStateButton
+from app.components.widgets.button import ThreeStateToolButton
 from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QPainter, QPixmap
 from PyQt5.QtWidgets import QLabel, QWidget, QGraphicsDropShadowEffect
@@ -54,7 +54,7 @@ class StateTooltip(QWidget):
         self.doneImage = QPixmap(
             r"app\resource\images\state_tooltip\complete_20_20.png"
         )
-        self.closeButton = ThreeStateButton(icon_path, self, (14, 14))
+        self.closeButton = ThreeStateToolButton(icon_path, (14, 14), self)
 
     def __initWidget(self):
         """ 初始化小部件 """

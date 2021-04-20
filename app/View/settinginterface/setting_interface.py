@@ -2,10 +2,10 @@
 import json
 import os
 
-from app.components.label import ClickableLabel
-from app.components.scroll_area import ScrollArea
-from app.components.slider import Slider
-from PyQt5.QtCore import Qt, pyqtSignal, QUrl
+from app.components.widgets.label import ClickableLabel
+from app.components.widgets.scroll_area import ScrollArea
+from app.components.widgets.slider import Slider
+from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import (QCheckBox, QHBoxLayout, QLabel, QPushButton,
                              QRadioButton, QWidget)

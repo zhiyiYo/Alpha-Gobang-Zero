@@ -4,9 +4,9 @@ from typing import List
 import numpy as np
 from alphazero.chess_board import ChessBoard
 from app.common.ai_thread import AIThread
-from app.components.chess import Chess
-from app.components.menu import ChessBoardMenu
-from app.components.continue_game_dialog import ContinueGameDialog
+from app.components.chesses.chess import Chess
+from app.components.widgets.menu import ChessBoardMenu
+from app.components.dialog.continue_game_dialog import ContinueGameDialog
 from app.components.state_tooltip import StateTooltip
 from PyQt5.QtCore import QPoint, QRect, Qt, pyqtSignal
 from PyQt5.QtGui import (QBrush, QCursor, QMouseEvent, QPainter, QPen, QPixmap,
@@ -80,7 +80,7 @@ class ChessBoardInterface(QWidget):
         # 信号连接到槽函数
         self.__connectSignalToSlot()
         if not self.isHumanFirst:
-            self.getAIAction()
+            self.__getAIAction()
 
     def paintEvent(self, e):
         """ 绘制棋盘 """
@@ -117,12 +117,12 @@ class ChessBoardInterface(QWidget):
             return
         self.isEnableAI = True
         # 计算棋子在矩阵上的坐标
-        cor = self.mapQPoint2MatIndex(e.pos())
-        updateOK = self.putChess(cor, self.humanColor)
+        cor = self.__mapQPoint2MatIndex(e.pos())
+        updateOK = self.__putChess(cor, self.humanColor)
         if updateOK and self.isEnableAI:
-            self.getAIAction()
+            self.__getAIAction()
 
-    def getAIAction(self):
+    def __getAIAction(self):
         """ 获取 AI 的动作 """
         self.stateTooltip = StateTooltip(
             "AI 正在思考中", "前辈请耐心等待哦~~", self.window())
@@ -133,7 +133,7 @@ class ChessBoardInterface(QWidget):
         self.isAIThinking = True
         self.aiThread.start()
 
-    def mapQPoint2MatIndex(self, pos: QPoint):
+    def __mapQPoint2MatIndex(self, pos: QPoint):
         """ 将桌面坐标映射到矩阵下标 """
         n = self.boardLen
         left, top = self.__getMargin()
@@ -144,7 +144,7 @@ class ChessBoardInterface(QWidget):
         col, row = np.where(distances == distances.min())
         return row[0], col[0]
 
-    def putChess(self, pos: tuple, color):
+    def __putChess(self, pos: tuple, color):
         """ 在棋盘上放置棋子
 
         Parameters
@@ -178,7 +178,7 @@ class ChessBoardInterface(QWidget):
                 self.previousAIChess.tipLabel.hide()
             self.previousAIChess = chess if isAIChess else None
             # 检查游戏是否结束
-            self.checkGameOver()
+            self.__checkGameOver()
         return updateOk
 
     def __searchCompleteSlot(self, action: int):
@@ -186,10 +186,10 @@ class ChessBoardInterface(QWidget):
         self.stateTooltip.setState(True)
         pos = (action//self.boardLen, action % self.boardLen)
         self.isAIThinking = False
-        self.putChess(pos, self.AIColor)
+        self.__putChess(pos, self.AIColor)
         self.stateTooltip = None
 
-    def checkGameOver(self):
+    def __checkGameOver(self):
         """ 检查游戏是否结束 """
         # 锁住 AI
         self.isEnableAI = False
@@ -205,7 +205,7 @@ class ChessBoardInterface(QWidget):
             msg = '平局！果然棋盘太小，施展不开，要不再战一局？'
         continueGameDiaglog = ContinueGameDialog('游戏结束', msg, self.window())
         continueGameDiaglog.exitGameSignal.connect(self.exitGameSignal)
-        continueGameDiaglog.continueGameSignal.connect(self.restartGame)
+        continueGameDiaglog.continueGameSignal.connect(self.__restartGame)
         continueGameDiaglog.exec_()
 
     def __setCursor(self, isChess=True):
@@ -217,7 +217,7 @@ class ChessBoardInterface(QWidget):
         else:
             self.setCursor(Qt.ArrowCursor)
 
-    def restartGame(self):
+    def __restartGame(self):
         """ 重新开始游戏 """
         if self.isAIThinking:
             return
@@ -228,7 +228,7 @@ class ChessBoardInterface(QWidget):
         self.chess_list.clear()
         self.previousAIChess = None
         if not self.isHumanFirst:
-            self.getAIAction()
+            self.__getAIAction()
 
     def updateGameConfig(self, config: dict):
         """ 更新游戏参数 """
@@ -274,6 +274,6 @@ class ChessBoardInterface(QWidget):
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         self.aiThread.searchComplete.connect(self.__searchCompleteSlot)
-        self.contextMenu.restartGameAct.triggered.connect(self.restartGame)
+        self.contextMenu.restartGameAct.triggered.connect(self.__restartGame)
         self.contextMenu.settingAct.triggered.connect(
             self.switchToSettingInterfaceSignal)

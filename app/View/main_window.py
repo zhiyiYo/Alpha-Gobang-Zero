@@ -1,8 +1,7 @@
 # coding: utf-8
 
 from app.components.framelesswindow import FramelessWindow
-from app.components.pop_up_ani_stacked_widget import PopUpAniStackedWidget
-from PyQt5.QtCore import QPoint, Qt
+from app.components.widgets.pop_up_ani_stacked_widget import PopUpAniStackedWidget
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, qApp
 

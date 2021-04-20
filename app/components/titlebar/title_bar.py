@@ -1,9 +1,9 @@
 # coding:utf-8
 
-from app.components.button import ThreeStateToolButton
-from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtGui import QIcon, QPixmap, QResizeEvent
-from PyQt5.QtWidgets import QLabel, QToolButton, QWidget
+from app.components.widgets.button import ThreeStateToolButton
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap, QResizeEvent
+from PyQt5.QtWidgets import QLabel, QWidget
 from win32.lib import win32con
 from win32.win32api import SendMessage
 from win32.win32gui import ReleaseCapture

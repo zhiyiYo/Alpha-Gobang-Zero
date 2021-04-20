@@ -82,7 +82,7 @@ class AlphaZeroMCTS:
 
         # 根据 π 选出动作及其对应节点
         actions = list(self.root.children.keys())
-        action = np.random.choice(actions, p=pi_)
+        action = int(np.random.choice(actions, p=pi_))
 
         if self.is_self_play:
             # 创建维度为 board_len^2 的 π

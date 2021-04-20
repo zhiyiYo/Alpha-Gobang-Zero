@@ -1,6 +1,6 @@
 # coding:utf-8
 from app.common.windoweffect import WindowEffect
-from app.components.navigation_button import NavigationButton
+from app.components.widgets.button import NavigationButton
 from PyQt5.QtCore import (QEasingCurve, QPoint, QPropertyAnimation, QRect, Qt,
                           pyqtSignal)
 from PyQt5.QtGui import QColor, QIcon, QPainter, QPen
