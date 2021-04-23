@@ -79,7 +79,7 @@
   ![误差曲线](docs/screenshot/误差曲线.png)
   
 ## 博客
-[如何使用自对弈强化学习训练一个五子棋机器人Alpha Gobang Zero](https://www.cnblogs.com/zhiyiYo/p/14683450.html)
+* [《如何使用自对弈强化学习训练一个五子棋机器人Alpha Gobang Zero》](https://www.cnblogs.com/zhiyiYo/p/14683450.html)
 
 ## 参考文献
 * [Mastering the game of Go without human knowledge](https://www.nature.com/articles/nature24270.epdf?author_access_token=VJXbVjaSHxFoctQQ4p2k4tRgN0jAjWel9jnR3ZoTv0PVW4gB86EEpGqTRDtpIz-2rmo8-KG06gqVobU5NSCFeHILHcVFUeMsbvwS-lxjqQGg98faovwjxeTUgZAUMnRQ)
