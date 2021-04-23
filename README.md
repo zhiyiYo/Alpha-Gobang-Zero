@@ -40,7 +40,7 @@
 
 
 ## 策略-价值网络
-* 网络组成 (各个模块的具体信息参见 [项目大纲](docs/项目大纲.md))
+* 网络组成 (各个模块的具体信息参见 [博客](https://www.cnblogs.com/zhiyiYo/p/14683450.html))
   * `ConvBlock` × 1
   * `ResidueBlock` × 4
   * `PolicyHead` × 1
