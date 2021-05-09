@@ -17,7 +17,7 @@ window = FlatChessBoardInterface()
 window.show()
 
 # 绘制棋谱
-for i, game in enumerate(games[9:], 1):
+for i, game in enumerate(games, 1):
     window.clearBoard()
     window.drawGame(game)
     window.save(fr'docs\chess_manual\{i}.png')

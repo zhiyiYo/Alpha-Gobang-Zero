@@ -87,13 +87,14 @@ class ChessBoardInterface(QWidget):
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing)
         # 绘制网格
-        painter.setPen(QPen(Qt.black, 2))
         left, top = self.__getMargin()
         for i in range(self.boardLen):
             x = y = self.margin + i*self.gridSize
             x = left + i*self.gridSize
             y = top + i*self.gridSize
             # 竖直线
+            width = 2 if i in [0, self.boardLen-1] else 1
+            painter.setPen(QPen(Qt.black, width))
             painter.drawLine(x, top, x, self.height()-top)
             # 水平线
             painter.drawLine(left, y, self.width()-left-1, y)
