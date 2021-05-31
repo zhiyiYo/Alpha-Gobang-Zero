@@ -187,8 +187,8 @@ class ChessBoardInterface(QWidget):
         self.stateTooltip.setState(True)
         pos = (action//self.boardLen, action % self.boardLen)
         self.isAIThinking = False
-        self.__putChess(pos, self.AIColor)
         self.stateTooltip = None
+        self.__putChess(pos, self.AIColor)
 
     def __checkGameOver(self):
         """ 检查游戏是否结束 """
