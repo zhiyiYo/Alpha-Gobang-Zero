@@ -6,7 +6,7 @@
 </h1>
 
 <p align="center">
-   基于自对弈强化学习的五子棋机器人
+  A gobang robot based on reinforcement learning
 </p>
 
 <p align="center">
@@ -32,25 +32,24 @@
 </p>
 
 <div align="center">
-<img src="docs/screenshot/游戏界面.png" alt="游戏界面" width="75%" style="box-shadow: 0 1px 15px rgba(27, 31, 35, .15)"/>
-<br>
-<img src="docs/screenshot/设置界面.png" alt="设置界面" width="75%" style="box-shadow: 0 1px 15px rgba(27, 31, 35, .15)"/>
+<img src="docs/screenshot/游戏界面.png" alt="游戏界面" width="70%"/>
 </div>
 
 
 
-## 策略-价值网络
-* 网络组成 (各个模块的具体信息参见 [博客](https://www.cnblogs.com/zhiyiYo/p/14683450.html))
+## Policy-Value Net
+* Network structure
   * `ConvBlock` × 1
   * `ResidueBlock` × 4
   * `PolicyHead` × 1
   * `ValueHead` × 1
-* 网络可视化
+* Network visualization
+<div align="center">
+<img src="docs/screenshot/模型架构.png" alt="模型架构" width="70%"/>
+</div>
 
-  ![模型架构](docs/screenshot/模型架构.png)
-
-## 快速开始
-1. 创建虚拟环境并安装依赖包:
+## Quick start
+1. Build virtual environment:
 
     ```shell
     conda create -n Alpha_Gobang_Zero python=3.8
@@ -58,34 +57,31 @@
     pip install -r requirements.txt
     ```
 
-2. 安装 `PyTorch`，具体操作参见博客 [Pytorch 的安装](https://blog.csdn.net/qq_23013309/article/details/103965619)；
+2. install `PyTorch`，refer to the blog [《Pytorch 的安装》](https://blog.csdn.net/qq_23013309/article/details/103965619) for details；
 
 
-3. 开始游戏:
+3. Start game:
 
     ```shell
     python game.py
     ```
 
-## 训练模型
-* 开始训练:
+## Train model
 
-    ```shell
-    python train.py
-    ```
-    
-* 误差曲线
 
-  ![误差曲线](docs/screenshot/误差曲线.png)
-  
-## 博客
-* [《如何使用自对弈强化学习训练一个五子棋机器人Alpha Gobang Zero》](https://www.cnblogs.com/zhiyiYo/p/14683450.html)
+  ```shell
+  python train.py
+  ```
 
-## 参考文献
-* [Mastering the game of Go without human knowledge](https://www.nature.com/articles/nature24270.epdf?author_access_token=VJXbVjaSHxFoctQQ4p2k4tRgN0jAjWel9jnR3ZoTv0PVW4gB86EEpGqTRDtpIz-2rmo8-KG06gqVobU5NSCFeHILHcVFUeMsbvwS-lxjqQGg98faovwjxeTUgZAUMnRQ)
-* [Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm](https://arxiv.org/abs/1712.01815)
 
-## 证书
+## Blog
+[《如何使用自对弈强化学习训练一个五子棋机器人Alpha Gobang Zero》](https://www.cnblogs.com/zhiyiYo/p/14683450.html)
+
+## Reference
+* [《Mastering the game of Go without human knowledge》](https://www.nature.com/articles/nature24270.epdf?author_access_token=VJXbVjaSHxFoctQQ4p2k4tRgN0jAjWel9jnR3ZoTv0PVW4gB86EEpGqTRDtpIz-2rmo8-KG06gqVobU5NSCFeHILHcVFUeMsbvwS-lxjqQGg98faovwjxeTUgZAUMnRQ)
+* [《Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm》](https://arxiv.org/abs/1712.01815)
+
+## License
 ```
 MIT License
 
