@@ -49,7 +49,7 @@
 </div>
 
 ## Quick start
-1. Build virtual environment:
+1. Create virtual environment:
 
     ```shell
     conda create -n Alpha_Gobang_Zero python=3.8
@@ -57,12 +57,13 @@
     pip install -r requirements.txt
     ```
 
-2. install `PyTorch`，refer to the blog [《Pytorch 的安装》](https://blog.csdn.net/qq_23013309/article/details/103965619) for details；
+2. Install `PyTorch`，refer to the blog [《Pytorch 的安装》](https://blog.csdn.net/qq_23013309/article/details/103965619) for details；
 
 
 3. Start game:
 
     ```shell
+    conda activate Alpha_Gobang_Zero
     python game.py
     ```
 
@@ -70,6 +71,7 @@
 
 
   ```shell
+  conda activate Alpha_Gobang_Zero
   python train.py
   ```
 
