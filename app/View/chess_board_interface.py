@@ -6,7 +6,7 @@ from alphazero.chess_board import ChessBoard
 from app.common.ai_thread import AIThread
 from app.components.chesses.chess import Chess
 from app.components.widgets.menu import ChessBoardMenu
-from app.components.dialog.continue_game_dialog import ContinueGameDialog
+from app.components.dialog.mask_dialog import MaskDialog
 from app.components.state_tooltip import StateTooltip
 from PyQt5.QtCore import QPoint, QRect, Qt, pyqtSignal
 from PyQt5.QtGui import (QBrush, QCursor, QMouseEvent, QPainter, QPen, QPixmap,
@@ -204,9 +204,9 @@ class ChessBoardInterface(QWidget):
             msg = '前辈别气馁，可以再试一次哦~~'
         else:
             msg = '平局！果然棋盘太小，施展不开，要不再战一局？'
-        continueGameDiaglog = ContinueGameDialog('游戏结束', msg, self.window())
-        continueGameDiaglog.exitGameSignal.connect(self.exitGameSignal)
-        continueGameDiaglog.continueGameSignal.connect(self.__restartGame)
+        continueGameDiaglog = MaskDialog('游戏结束', msg, self.window())
+        continueGameDiaglog.cancelSignal.connect(self.exitGameSignal)
+        continueGameDiaglog.yesSignal.connect(self.__restartGame)
         continueGameDiaglog.exec_()
 
     def __setCursor(self, isChess=True):

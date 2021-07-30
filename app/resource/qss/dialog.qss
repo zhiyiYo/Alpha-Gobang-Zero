@@ -1,13 +1,12 @@
-QLabel{
+QDialog {
+    background-color: rgb(0, 126, 153);
+}
+
+QLabel {
     background-color: transparent;
 }
 
-QLabel#titleLabel{
-    padding: 10px 9px 12px 9px;
-    font:13px 'Microsoft YaHei';
-}
-
-QLabel#subTitleLabel {
+QLabel#titleLabel {
     color: white;
     font: 33px 'Microsoft YaHei Light';
     font-weight: bold;
@@ -19,21 +18,25 @@ QLabel#contentLabel {
     font-weight: 400;
 }
 
-QPushButton{
+QPushButton {
     color: white;
     border: 3px solid white;
     border-radius: 0px;
-    padding: 7px 15px 7px 15px;
-    background: rgb(0,126,153);
+    padding: 5px 35px 5px 35px;
+    background: rgb(0, 126, 153);
     font: 18px 'Microsoft YaHei';
     font-weight: bold;
 }
 
-QPushButton:hover{
-    background: rgb(14,179,214);
+QPushButton:hover {
+    background: rgb(14, 179, 214);
 }
 
-QPushButton:pressed{
+QPushButton:pressed:focus {
     color: black;
     background-color: white;
+}
+
+QPushButton:focus{
+    background-color: rgb(0, 154, 187);
 }

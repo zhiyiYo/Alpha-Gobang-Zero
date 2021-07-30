@@ -1,108 +1,90 @@
 # coding:utf-8
-
 import os
 
 from app.common.model_utils import testModel
-from app.components.dialog.delete_model_dialog import DeleteModelDialog
-from app.components.dialog.sub_panel_frame import SubPanelFrame
-from PyQt5.QtCore import Qt, QTimer, pyqtSignal
-from PyQt5.QtGui import QColor, QPainter, QPen, QPixmap
+from app.components.dialog.dialog import Dialog
+from PyQt5.QtCore import Qt, pyqtSignal, QPropertyAnimation, QEasingCurve
+from PyQt5.QtGui import QPainter, QPixmap
 from PyQt5.QtWidgets import (QFileDialog, QGraphicsDropShadowEffect, QLabel,
-                             QPushButton, QWidget)
+                             QPushButton, QWidget,QDialog,QGraphicsOpacityEffect)
 
 from .folding_window import FoldingWindow
 from .model_card import ModelCard
 
 
-class SelectModelDialog(SubPanelFrame):
-    """ 选择歌曲文件夹面板 """
+class SelectModelDialog(QDialog):
+    """ 选择模型对话框 """
 
-    def __init__(self, selectedModel: str, parent=None):
-        """
-        Parameters
-        ----------
-        selectedModel: str
-            选中的模型文件路径
-
-        parent:
-            父级窗口
-        """
-        super().__init__(parent)
-        # 实例化子属性面板
-        self.__subDialog = SubSelectModelDialog(selectedModel, self)
-        self.modelChangedSignal = self.__subDialog.modelChangedSignal
-        # 初始化
-        self.showMask()
-        self.setSubWindowPos()
-
-    def setSubWindowPos(self):
-        """ 设置子窗口的位置 """
-        self.__subDialog.move(
-            int(self.width() / 2 - self.__subDialog.width() / 2),
-            int(self.height() / 2 - self.__subDialog.height() / 2),
-        )
-
-
-class SubSelectModelDialog(QWidget):
-    """ 子选择歌曲文件夹面板 """
-
-    modelChangedSignal = pyqtSignal(str)  # 发送更新了的歌曲文件夹列表
+    modelChangedSignal = pyqtSignal(str)
 
     def __init__(self, selectedModel: str, parent):
-        super().__init__(parent)
+        super().__init__(parent=parent)
         self.selectedModel = selectedModel
-        # 创建小部件
-        self.selectModelTimer = QTimer(self)
-        self.deleteModelTimer = QTimer(self)
-        self.addModelCard = AddModelCard(self)
-        self.completeButton = QPushButton("完成", self)
-        self.titleLabel = QLabel('从本地模型库选择阿尔法狗', self)
-        self.subTitleLabel = QLabel('当前未使用任何模型', self)
+        self.windowMask = QWidget(self)
+        self.widget = QWidget(self)
+        self.addModelCard = AddModelCard(self.widget)
+        self.completeButton = QPushButton("完成", self.widget)
+        self.titleLabel = QLabel('从本地模型库选择阿尔法狗', self.widget)
+        self.subTitleLabel = QLabel('当前未使用任何模型', self.widget)
         if self.selectedModel:
             tip = '' if testModel(selectedModel) else '(模型不可用)'
             self.subTitleLabel.setText("现在我们正在使用这个模型"+tip)
-            self.modelCard = ModelCard(self.selectedModel, self)
-            # 在显示删除文件卡对话框前加个延时
-            self.modelCard.clicked.connect(self.deleteModelTimer.start)
+            self.modelCard = ModelCard(self.selectedModel, self.widget)
+            self.modelCard.clicked.connect(self.showDeleteModelPanel)
         else:
             self.modelCard = None
-        # 初始化
         self.__initWidget()
 
     def __initWidget(self):
         """ 初始化小部件 """
-        self.setFixedSize(440, 324)
-        self.setAttribute(Qt.WA_StyledBackground)
-        # 添加阴影
-        self.setShadowEffect()
-        # 初始化定时器
-        self.selectModelTimer.setInterval(500)
-        self.deleteModelTimer.setInterval(600)
-        self.selectModelTimer.timeout.connect(self.showFileDialog)
-        self.deleteModelTimer.timeout.connect(self.showDeleteModelPanel)
-        # 将信号连接到槽函数
-        self.addModelCard.clicked.connect(self.selectModelTimer.start)
-        self.completeButton.clicked.connect(self.updateModel)
-        # 分配ID
-        self.setObjectName("father")
-        self.titleLabel.setObjectName("titleLabel")
-        self.subTitleLabel.setObjectName("subTitleLabel")
+        self.__setShadowEffect()
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setGeometry(0, 0, self.parent().width(), self.parent().height())
+        self.windowMask.resize(self.size())
         self.__initLayout()
         self.__setQss()
+        # 信号连接到槽
+        self.addModelCard.clicked.connect(self.showFileDialog)
+        self.completeButton.clicked.connect(self.updateModel)
 
     def __initLayout(self):
         """ 初始化布局 """
+        self.widget.setFixedSize(440, 324)
         self.titleLabel.move(31, 31)
         self.addModelCard.move(36, 130)
-        self.completeButton.move(223, self.height() - 71)
+        self.completeButton.move(223, self.widget.height() - 71)
         self.subTitleLabel.move(31, 79)
         if self.modelCard:
             self.modelCard.move(36, 130)
             self.addModelCard.hide()
+        self.widget.move(self.width()//2 - self.widget.width()//2,
+                         self.height()//2 - self.widget.height()//2)
+
+    def __setShadowEffect(self):
+        """ 添加阴影 """
+        shadowEffect = QGraphicsDropShadowEffect(self.widget)
+        shadowEffect.setBlurRadius(50)
+        shadowEffect.setOffset(0, 5)
+        self.widget.setGraphicsEffect(shadowEffect)
+
+    def showDeleteModelPanel(self):
+        """ 显示删除模型对话框 """
+        content = f'如果将"{os.path.basename(self.selectedModel)}"从模型中移除，则该模型文件不会再被使用，但不会被删除。'
+        deleteModelDialog = Dialog('删除此模型吗？', content, self.window())
+        deleteModelDialog.yesSignal.connect(self.deleteModelFolder)
+        deleteModelDialog.exec_()
+
+    def deleteModelFolder(self):
+        """ 删除选中的模型卡 """
+        self.sender().deleteLater()
+        self.modelCard.deleteLater()
+        self.subTitleLabel.setText('当前未使用任何模型')
+        self.addModelCard.show()
+        self.selectedModel = None
 
     def showFileDialog(self):
         """ 定时器溢出时显示文件对话框 """
-        self.selectModelTimer.stop()
         path, _ = QFileDialog.getOpenFileName(
             self, "选择模型", "./model", '模型文件 (*.pth; *.pt; *.pkl);;所有文件 (*.*)')
         if path:
@@ -110,9 +92,9 @@ class SubSelectModelDialog(QWidget):
             # 检验模型是否可用
             isModelOk = testModel(path)
             path = path.replace("/", "\\")
-            self.modelCard = ModelCard(path, self)
+            self.modelCard = ModelCard(path, self.widget)
             self.modelCard.move(36, 130)
-            self.modelCard.clicked.connect(self.deleteModelTimer.start)
+            self.modelCard.clicked.connect(self.showDeleteModelPanel)
             self.selectedModel = path
             # 设置提示并根据模型是否可用来设置按钮可用性
             tip = '' if isModelOk else '(模型不可用)'
@@ -120,49 +102,47 @@ class SubSelectModelDialog(QWidget):
             self.subTitleLabel.adjustSize()
             self.completeButton.setEnabled(isModelOk)
 
-    def showDeleteModelPanel(self):
-        """ 显示删除模型对话框 """
-        self.deleteModelTimer.stop()
-        self.deleteModelDialog = DeleteModelDialog(
-            os.path.basename(self.selectedModel), self.window())
-        self.deleteModelDialog.deleteButton.clicked.connect(
-            self.deleteModelFolder)
-        self.deleteModelDialog.exec_()
-
-    def deleteModelFolder(self):
-        """ 删除选中的模型卡 """
-        self.deleteModelDialog.deleteLater()
-        self.modelCard.deleteLater()
-        self.subTitleLabel.setText('当前未使用任何模型')
-        self.addModelCard.show()
-        self.selectedModel = None
-
-    def setShadowEffect(self):
-        """ 添加阴影 """
-        self.shadowEffect = QGraphicsDropShadowEffect(self)
-        self.shadowEffect.setBlurRadius(60)
-        self.shadowEffect.setOffset(0, 5)
-        self.setGraphicsEffect(self.shadowEffect)
-
-    def paintEvent(self, e):
-        """ 绘制边框 """
-        pen = QPen(QColor(172, 172, 172))
-        pen.setWidth(2)
-        painter = QPainter(self)
-        painter.setPen(pen)
-        painter.drawRect(0, 0, self.width() - 1, self.height() - 1)
-
-    def __setQss(self):
-        """ 设置层叠样式 """
-        with open(r"app\resource\qss\select_model_dialog.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
-
     def updateModel(self):
         """ 更新选中的模型 """
         # 保存设置后禁用窗口
         self.setEnabled(False)
         self.modelChangedSignal.emit(self.selectedModel)
-        self.parent().deleteLater()
+        self.deleteLater()
+
+    def __setQss(self):
+        """ 设置层叠样式 """
+        self.windowMask.setObjectName('windowMask')
+        self.titleLabel.setObjectName('titleLabel')
+        self.subTitleLabel.setObjectName("subTitleLabel")
+        with open(r'app\resource\qss\select_model_dialog.qss', encoding='utf-8') as f:
+            self.setStyleSheet(f.read())
+
+    def showEvent(self, e):
+        """ 淡入 """
+        opacityEffect = QGraphicsOpacityEffect(self)
+        self.setGraphicsEffect(opacityEffect)
+        opacityAni = QPropertyAnimation(opacityEffect, b'opacity', self)
+        opacityAni.setStartValue(0)
+        opacityAni.setEndValue(1)
+        opacityAni.setDuration(200)
+        opacityAni.setEasingCurve(QEasingCurve.InSine)
+        opacityAni.finished.connect(opacityEffect.deleteLater)
+        opacityAni.start()
+        super().showEvent(e)
+
+    def closeEvent(self, e):
+        """ 淡出 """
+        self.widget.setGraphicsEffect(None)
+        opacityEffect = QGraphicsOpacityEffect(self)
+        self.setGraphicsEffect(opacityEffect)
+        opacityAni = QPropertyAnimation(opacityEffect, b'opacity', self)
+        opacityAni.setStartValue(1)
+        opacityAni.setEndValue(0)
+        opacityAni.setDuration(100)
+        opacityAni.setEasingCurve(QEasingCurve.OutCubic)
+        opacityAni.finished.connect(self.deleteLater)
+        opacityAni.start()
+        e.ignore()
 
 
 class AddModelCard(FoldingWindow):

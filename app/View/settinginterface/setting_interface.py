@@ -5,6 +5,7 @@ import os
 from app.components.widgets.label import ClickableLabel
 from app.components.widgets.scroll_area import ScrollArea
 from app.components.widgets.slider import Slider
+from app.components.widgets.switch_button import SwitchButton
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import (QCheckBox, QHBoxLayout, QLabel, QPushButton,
@@ -22,7 +23,6 @@ class SettingInterface(QWidget):
         self.hBoxLayout = QHBoxLayout(self)
         self.scrollWidget = QWidget(self)
         self.scrollArea = ScrollArea()
-        self.useGPUCheckBox = QCheckBox(self.scrollWidget)
         self.useGPULabel = QLabel('显卡', self.scrollWidget)
         self.firstHandLabel = QLabel('先手', self.scrollWidget)
         self.mctsLabel = QLabel('蒙特卡洛树', self.scrollWidget)
@@ -31,6 +31,7 @@ class SettingInterface(QWidget):
         self.AIButton = QRadioButton('阿尔法狗', self.scrollWidget)
         self.cPuctSlider = Slider(Qt.Horizontal, self.scrollWidget)
         self.aboutAppLabel = QLabel('关于此应用', self.scrollWidget)
+        self.useGPUSwitchButton = SwitchButton(parent=self.scrollWidget)
         self.giveIssueButton = QPushButton('发送反馈', self.scrollWidget)
         self.mctsIterTimeLabel = QLabel('调整搜索次数', self.scrollWidget)
         self.mctsIterTimeSlider = Slider(Qt.Horizontal, self.scrollWidget)
@@ -61,10 +62,10 @@ class SettingInterface(QWidget):
         # 使用 GPU 加速
         self.useGPULabel.move(30, 138)
         self.useGPUTipsLabel.move(30, 180)
-        self.useGPUCheckBox.move(30, 210)
+        self.useGPUSwitchButton.move(30, 210)
         # 先手后手
         self.firstHandLabel.move(30, 270)
-        self.humanButton.move(30, 310)
+        self.humanButton.move(30, 315)
         self.AIButton.move(30, 360)
         # 蒙特卡洛树参数
         self.mctsLabel.move(30, 420)
@@ -80,9 +81,9 @@ class SettingInterface(QWidget):
         self.giveIssueButton.move(30, 700)
         # 初始化 GPU 复选框
         isUseGPU = self.config.get('is_use_gpu', False) and cuda.is_available()
-        self.useGPUCheckBox.setText('开' if isUseGPU else '关')
-        self.useGPUCheckBox.setChecked(isUseGPU)
-        self.useGPUCheckBox.setEnabled(cuda.is_available())
+        self.useGPUSwitchButton.setText('开' if isUseGPU else '关')
+        self.useGPUSwitchButton.setChecked(isUseGPU)
+        self.useGPUSwitchButton.setEnabled(cuda.is_available())
         # 初始化滑动条
         self.cPuctSlider.setRange(5, 200)
         self.cPuctSlider.setSingleStep(5)
@@ -140,7 +141,7 @@ class SettingInterface(QWidget):
         """ 信号连接到槽 """
         self.cPuctSlider.valueChanged.connect(self.__adjustCPuct)
         self.selectModelLabel.clicked.connect(self.__showSelectModelDialog)
-        self.useGPUCheckBox.stateChanged.connect(self.__useGPUChangedSlot)
+        self.useGPUSwitchButton.checkedChanged.connect(self.__useGPUChangedSlot)
         self.humanButton.clicked.connect(self.__firstHandChangedSlot)
         self.AIButton.clicked.connect(self.__firstHandChangedSlot)
         self.mctsIterTimeSlider.valueChanged.connect(
@@ -155,9 +156,9 @@ class SettingInterface(QWidget):
 
     def __useGPUChangedSlot(self):
         """ 使用 GPU 加速复选框选中状态改变槽函数 """
-        isUse = self.useGPUCheckBox.isChecked()
+        isUse = self.useGPUSwitchButton.isChecked()
         self.config['is_use_gpu'] = isUse
-        self.useGPUCheckBox.setText('开' if isUse else '关')
+        self.useGPUSwitchButton.setText('开' if isUse else '关')
 
     def __firstHandChangedSlot(self):
         """ 先手改变 """

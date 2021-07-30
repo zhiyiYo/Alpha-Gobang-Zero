@@ -31,89 +31,61 @@ QLabel#clickableLabel:hover {
     color: rgb(154,154,154);
 }
 
-
-/* 复选框 */
-QCheckBox{
-    spacing:15px;
-    color:black;
-    font:18px 'Microsoft YaHei';
-}
-
-QCheckBox::indicator{
-    width: 50px;
-    height: 25px;
-}
-
-QCheckBox::indicator:unchecked {
-    border-image: url(app/resource/images/setting_interface/checkBox_unchecked.png);
-}
-
-QCheckBox::indicator:checked {
-    border-image: url(app/resource/images/setting_interface/checkBox_checked.png);
-}
-
-QCheckBox::indicator:unchecked:hover {
-    border-image: url(app/resource/images/setting_interface/checkBox_unchecked_hover.png);
-}
-
-QCheckBox::indicator:checked:hover {
-    border-image: url(app/resource/images/setting_interface/checkBox_checked_hover.png);
-}
-
-QCheckBox::indicator:unchecked:pressed {
-    border-image: url(app/resource/images/setting_interface/checkBox_unchecked_pressed.png);
-}
-
-QCheckBox::indicator:checked:pressed {
-    border-image: url(app/resource/images/setting_interface/checkBox_checked_pressed.png);
-}
-
-QCheckBox::indicator:unchecked:disabled{
-    border-image: url(app/resource/images/setting_interface/checkBox_unchecked_disabled.png);
-}
-
-
-
-/* 单选框 */
-QRadioButton{
-    spacing:10px;
-    color:black;
-    font:18px 'Microsoft YaHei';
+/* 单选按钮 */
+QRadioButton {
+    spacing: 10px;
+    color: black;
+    font: 18px 'Microsoft YaHei';
+    background-color: transparent;
 }
 
 QRadioButton::indicator {
-    height: 26px;
-    width: 25px;
+    background-color: transparent;
 }
 
 QRadioButton::indicator:unchecked {
-    border-image: url(app/resource/images/setting_interface/radioButton_unchecked.png);
+    height: 22px;
+    width: 22px;
+    border: 2px solid rgb(154, 154, 154);
+    border-radius: 13px;
 }
 
 
 QRadioButton::indicator:checked {
-    border-image: url(app/resource/images/setting_interface/radioButton_checked.png);
-
+    height: 12px;
+    width: 12px;
+    border: 7px solid rgb(0, 153, 188);
+    border-radius: 13px;
 }
 
 QRadioButton::indicator:unchecked:hover {
-    border-image: url(app/resource/images/setting_interface/radioButton_unchecked_hover.png);
-
+    height: 22px;
+    width: 22px;
+    border: 2px solid rgb(120, 120, 120);
+    border-radius: 13px;
 }
 
 QRadioButton::indicator:checked:hover {
-    border-image: url(app/resource/images/setting_interface/radioButton_checked_hover.png);
-
+    height: 12px;
+    width: 12px;
+    border: 7px solid rgb(72, 210, 242);
+    border-radius: 13px;
 }
 
 QRadioButton::indicator:unchecked:pressed {
-    border-image: url(app/resource/images/setting_interface/radioButton_unchecked_pressed.png);
+    height: 22px;
+    width: 22px;
+    background-color: rgb(153, 153, 153);
+    border: 2px solid rgb(84, 84, 84);
+    border-radius: 13px;
 
 }
 
 QRadioButton::indicator:checked:pressed {
-    border-image: url(app/resource/images/setting_interface/radioButton_checked_pressed.png);
-
+    height: 12px;
+    width: 12px;
+    border: 7px solid rgb(0, 107, 131);
+    border-radius: 13px;
 }
 
 
@@ -143,15 +115,12 @@ QScrollBar::add-page:vertical,
 QScrollBar::sub-page:vertical {
     background: none;
 }
-
-/*滑动条*/
+/* 水平滑动条 */
 QSlider:horizontal {
-    height: 25px;
+    height: 26px;
     width: 188px;
     background-color: transparent;
-    /*padding:10px 0px 10px 0px;*/
 }
-
 
 QSlider::groove:horizontal {
     width: 188px;
@@ -160,17 +129,18 @@ QSlider::groove:horizontal {
 }
 
 QSlider::handle:horizontal {
-    width: 25px;
-    height: 25px;
-    border-image: url(app/resource/images/setting_interface/slider_handle_normal_25_25.png);
+    width: 26px;
+    height: 26px;
+    border-radius: 13px;
+    background-color: rgb(0, 153, 188);
 }
 
 QSlider::handle:horizontal:hover {
-    border-image: url(app/resource/images/setting_interface/slider_handle_hover_25_25.png);
+    background-color: rgb(72, 210, 242);
 }
 
 QSlider::handle:horizontal:pressed {
-    border-image: url(app/resource/images/setting_interface/slider_handle_pressed_25_25.png);
+    background-color: rgb(0, 107, 131);
 }
 
 
@@ -186,7 +156,6 @@ QSlider::add-page:horizontal {
     margin-top: 11px;
     margin-bottom: 11px;
 }
-
 
 /* 按钮 */
 QPushButton {
