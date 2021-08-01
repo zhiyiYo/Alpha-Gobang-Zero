@@ -7,6 +7,6 @@ from app.View.main_window import MainWindow
 
 app = QApplication(sys.argv)
 app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
-alpha_gobang_zero = MainWindow()
-alpha_gobang_zero.show()
+w = MainWindow()
+w.show()
 sys.exit(app.exec_())

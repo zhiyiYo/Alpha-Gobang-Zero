@@ -278,3 +278,10 @@ class ChessBoardInterface(QWidget):
         self.contextMenu.restartGameAct.triggered.connect(self.__restartGame)
         self.contextMenu.settingAct.triggered.connect(
             self.switchToSettingInterfaceSignal)
+
+    def closeEvent(self, e):
+        """ 关闭界面 """
+        self.aiThread.quit()
+        self.aiThread.wait()
+        self.aiThread.deleteLater()
+        e.accept()

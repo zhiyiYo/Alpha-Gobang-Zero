@@ -62,6 +62,7 @@ class MainWindow(FramelessWindow):
 
     def closeEvent(self, e):
         self.settingInterface.saveConfig()
+        self.chessBoardInterface.close()
         e.accept()
 
     def exitGame(self):
