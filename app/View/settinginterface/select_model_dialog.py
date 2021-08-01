@@ -2,7 +2,7 @@
 import os
 
 from app.common.model_utils import testModel
-from app.components.dialog.dialog import Dialog
+from app.components.dialogs.dialog import Dialog
 from PyQt5.QtCore import Qt, pyqtSignal, QPropertyAnimation, QEasingCurve
 from PyQt5.QtGui import QPainter, QPixmap
 from PyQt5.QtWidgets import (QFileDialog, QGraphicsDropShadowEffect, QLabel,

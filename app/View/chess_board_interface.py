@@ -6,7 +6,7 @@ from alphazero.chess_board import ChessBoard
 from app.common.ai_thread import AIThread
 from app.components.chesses.chess import Chess
 from app.components.widgets.menu import ChessBoardMenu
-from app.components.dialog.mask_dialog import MaskDialog
+from app.components.dialogs.mask_dialog import MaskDialog
 from app.components.state_tooltip import StateTooltip
 from PyQt5.QtCore import QPoint, QRect, Qt, pyqtSignal
 from PyQt5.QtGui import (QBrush, QCursor, QMouseEvent, QPainter, QPen, QPixmap,
