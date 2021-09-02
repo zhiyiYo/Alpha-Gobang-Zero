@@ -25,15 +25,15 @@ class Chess(QLabel):
         self.__checkColor(color)
         self.color = color
         self.__imagePath_dict = {
-            ChessBoard.BLACK: r'app\resource\images\chess_board_interface\black.png',
-            ChessBoard.WHITE: r'app\resource\images\chess_board_interface\white.png',
+            ChessBoard.BLACK: ':/images/chess_board_interface/black.png',
+            ChessBoard.WHITE: ':/images/chess_board_interface/white.png',
         }
         self.setPixmap(QPixmap(self.__imagePath_dict[self.color]).scaled(
             40, 40, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         if needTip:
             self.tipLabel = QLabel(self)
             self.tipLabel.setPixmap(
-                QPixmap(r'app\resource\images\chess_board_interface\气泡.png'))
+                QPixmap(':/images/chess_board_interface/气泡.png'))
             self.tipLabel.move(24, 0)
         else:
             self.tipLabel = QLabel(self)

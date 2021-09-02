@@ -6,7 +6,7 @@ from alphazero.chess_board import ChessBoard
 from app.common.ai_thread import AIThread
 from app.components.chesses.chess import Chess
 from app.components.widgets.menu import ChessBoardMenu
-from app.components.dialogs.mask_dialog import MaskDialog
+from app.components.dialogs.message_dialog import MessageDialog
 from app.components.state_tooltip import StateTooltip
 from PyQt5.QtCore import QPoint, QRect, Qt, pyqtSignal
 from PyQt5.QtGui import (QBrush, QCursor, QMouseEvent, QPainter, QPen, QPixmap,
@@ -86,6 +86,7 @@ class ChessBoardInterface(QWidget):
         """ 绘制棋盘 """
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing)
+
         # 绘制网格
         left, top = self.__getMargin()
         for i in range(self.boardLen):
@@ -98,6 +99,7 @@ class ChessBoardInterface(QWidget):
             painter.drawLine(x, top, x, self.height()-top)
             # 水平线
             painter.drawLine(left, y, self.width()-left-1, y)
+
         # 绘制圆点
         painter.setBrush(QBrush(Qt.black))
         painter.setPen(Qt.NoPen)
@@ -113,10 +115,12 @@ class ChessBoardInterface(QWidget):
     def mousePressEvent(self, e: QMouseEvent) -> None:
         """ 鼠标按下后放置棋子 """
         # AI还在思考就直接返回
-        if self.isAIThinking or e.button() == Qt.RightButton or\
+        if self.isAIThinking or e.button() == Qt.RightButton or \
                 e.pos() not in self.__getChessRegion():
             return
+
         self.isEnableAI = True
+
         # 计算棋子在矩阵上的坐标
         cor = self.__mapQPoint2MatIndex(e.pos())
         updateOK = self.__putChess(cor, self.humanColor)
@@ -125,8 +129,9 @@ class ChessBoardInterface(QWidget):
 
     def __getAIAction(self):
         """ 获取 AI 的动作 """
-        self.stateTooltip = StateTooltip(
-            "AI 正在思考中", "前辈请耐心等待哦~~", self.window())
+        title = self.tr('AI is thinking')
+        content = self.tr("Please wait patiently...")
+        self.stateTooltip = StateTooltip(title, content, self.window())
         self.stateTooltip.move(
             self.window().width() - self.stateTooltip.width() - 63, 60)
         self.stateTooltip.raise_()
@@ -166,6 +171,7 @@ class ChessBoardInterface(QWidget):
         updateOk = self.chessBoard.do_action_(pos)
         if updateOk:
             isAIChess = color != self.humanColor
+
             # 矩阵的 axis = 0 方向为 y 轴方向
             chess = Chess(color, self, isAIChess)
             left, top = self.__getMargin()
@@ -174,12 +180,15 @@ class ChessBoardInterface(QWidget):
             chess.show()
             chess.move(chessPos)
             self.chess_list.append(chess)
+
             # 取消上一个白棋的提示状态
             if self.previousAIChess:
                 self.previousAIChess.tipLabel.hide()
             self.previousAIChess = chess if isAIChess else None
+
             # 检查游戏是否结束
             self.__checkGameOver()
+
         return updateOk
 
     def __searchCompleteSlot(self, action: int):
@@ -198,13 +207,18 @@ class ChessBoardInterface(QWidget):
         if not isOver:
             self.isEnableAI = True  # 解锁
             return
+
+        title=self.tr('Game over')
         if winner == self.humanColor:
-            msg = '恭喜前辈赢得比赛，AI 表示不服，要不再战一局?'
+            msg = self.tr("Congratulations on winning the game. AI said"
+                          " he didn't accept it. Why don't we fight another game?")
         elif winner == self.AIColor:
-            msg = '前辈别气馁，可以再试一次哦~~'
+            msg = self.tr("Don't be discouraged. You can try again")
         else:
-            msg = '平局！果然棋盘太小，施展不开，要不再战一局？'
-        continueGameDiaglog = MaskDialog('游戏结束', msg, self.window())
+            msg = self.tr("it ends in a draw! Sure enough, the chessboard"
+                          " is too small to play. Why don't you fight another game?")
+
+        continueGameDiaglog = MessageDialog(title, msg, self.window())
         continueGameDiaglog.cancelSignal.connect(self.exitGameSignal)
         continueGameDiaglog.yesSignal.connect(self.__restartGame)
         continueGameDiaglog.exec_()
@@ -213,7 +227,7 @@ class ChessBoardInterface(QWidget):
         """ 设置光标 """
         if isChess:
             color = 'black' if self.isHumanFirst else 'white'
-            self.setCursor(QCursor(QPixmap(fr'app\resource\images\chess_board_interface\{color}.png').scaled(
+            self.setCursor(QCursor(QPixmap(f':/images/chess_board_interface/{color}.png').scaled(
                 20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation)))
         else:
             self.setCursor(Qt.ArrowCursor)

@@ -4,12 +4,12 @@ QWidget {
 
 QLabel#titleLabel {
     color: white;
-    font: 17px 'Microsoft YaHei';
+    font: 17px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QLabel#contentLabel {
     color: rgba(255, 255, 255, 210);
-    font: 16px 'Microsoft YaHei';
+    font: 16px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QToolButton {
@@ -17,13 +17,13 @@ QToolButton {
     margin: 0px;
     width: 14px;
     height: 14px;
-    background: url(app/resource/images/state_tooltip/close_normal.png) top center no-repeat;
+    background: url(:/images/state_tooltip/close_normal.png) top center no-repeat;
 }
 
 QToolButton:hover {
-    background: url(app/resource/images/state_tooltip/close_hover.png) top center no-repeat;
+    background: url(:/images/state_tooltip/close_hover.png) top center no-repeat;
 }
 
 QToolButton:pressed {
-    background: url(app/resource/images/state_tooltip/close_hover.png) top center no-repeat;
+    background: url(:/images/state_tooltip/close_hover.png) top center no-repeat;
 }

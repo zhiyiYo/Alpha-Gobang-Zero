@@ -9,6 +9,6 @@ QToolButton {
 }
 
 QLabel {
-    font: 15px 'Microsoft YaHei Light';
+    font: 15px 'Segoe UI Semilight', 'Microsoft YaHei Light';
     color: black;
 }

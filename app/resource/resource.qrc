@@ -1,0 +1,49 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qss/dialog.qss</file>
+        <file>qss/main_window.qss</file>
+        <file>qss/mask_dialog.qss</file>
+        <file>qss/menu.qss</file>
+        <file>qss/navigation_button.qss</file>
+        <file>qss/navigation_interface.qss</file>
+        <file>qss/select_model_dialog.qss</file>
+        <file>qss/setting_interface.qss</file>
+        <file>qss/state_tooltip.qss</file>
+        <file>qss/switch_button.qss</file>
+        <file>qss/title_bar.qss</file>
+
+        <file>images/chess_board_interface/black.png</file>
+        <file>images/chess_board_interface/white.png</file>
+        <file>images/chess_board_interface/气泡.png</file>
+        <file>images/chess_board_interface/设置.png</file>
+        <file>images/chess_board_interface/重新开始.png</file>
+        <file>images/icon/二哈.jpg</file>
+        <file>images/icon/二哈.png</file>
+        <file>images/navigation_menu/显示导航菜单.png</file>
+        <file>images/navigation_menu/棋盘.png</file>
+        <file>images/navigation_menu/设置.png</file>
+        <file>images/setting_interface/黑色加号.png</file>
+        <file>images/setting_interface/黑色叉号.png</file>
+        <file>images/state_tooltip/close_hover.png</file>
+        <file>images/state_tooltip/close_normal.png</file>
+        <file>images/state_tooltip/completed.png</file>
+        <file>images/state_tooltip/running.png</file>
+        <file>images/state_tooltip/清空按钮_hover_50_50.png</file>
+        <file>images/state_tooltip/清空按钮_normal_50_50.png</file>
+        <file>images/state_tooltip/清空按钮_pressed_50_50.png</file>
+        <file>images/title_bar/关闭按钮_hover_57_40.png</file>
+        <file>images/title_bar/关闭按钮_normal_57_40.png</file>
+        <file>images/title_bar/关闭按钮_pressed_57_40.png</file>
+        <file>images/title_bar/向下还原按钮_hover_57_40.png</file>
+        <file>images/title_bar/向下还原按钮_normal_57_40.png</file>
+        <file>images/title_bar/向下还原按钮_pressed_57_40.png</file>
+        <file>images/title_bar/最大化按钮_hover_57_40.png</file>
+        <file>images/title_bar/最大化按钮_normal_57_40.png</file>
+        <file>images/title_bar/最大化按钮_pressed_57_40.png</file>
+        <file>images/title_bar/最小化按钮_hover_57_40.png</file>
+        <file>images/title_bar/最小化按钮_normal_57_40.png</file>
+        <file>images/title_bar/最小化按钮_pressed_57_40.png</file>
+
+        <file>i18n/AlphaGobangZero_zh.qm</file>
+    </qresource>
+</RCC>

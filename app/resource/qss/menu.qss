@@ -1,9 +1,8 @@
-
 /*设置菜单样式*/
 QMenu {
     background-color: rgb(242, 242, 242);
     font-size: 18px;
-    font: 18px "Microsoft YaHei";
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
     padding: 5px 0px 16px 0px;
     border: 1px solid rgb(196, 199, 200);
 }

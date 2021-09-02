@@ -1,13 +1,13 @@
 # coding:utf-8
 from app.common.auto_wrap import autoWrap
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, QFile
 from PyQt5.QtWidgets import QLabel,QPushButton
 
 from .mask_dialog_base import MaskDialogBase
 
 
-class MaskDialog(MaskDialogBase):
-    """ 删除卡片部件对话框 """
+class MessageDialog(MaskDialogBase):
+    """ 消息对话框 """
 
     yesSignal = pyqtSignal()
     cancelSignal = pyqtSignal()
@@ -17,8 +17,8 @@ class MaskDialog(MaskDialogBase):
         self.content = content
         self.titleLabel = QLabel(title, self.widget)
         self.contentLabel = QLabel(content, self.widget)
-        self.yesButton = QPushButton('确定', self.widget)
-        self.cancelButton = QPushButton('取消', self.widget)
+        self.yesButton = QPushButton(self.tr('OK'), self.widget)
+        self.cancelButton = QPushButton(self.tr('Cancel'), self.widget)
         self.__initWidget()
 
     def __initWidget(self):
@@ -59,5 +59,8 @@ class MaskDialog(MaskDialogBase):
         self.windowMask.setObjectName('windowMask')
         self.titleLabel.setObjectName('titleLabel')
         self.contentLabel.setObjectName('contentLabel')
-        with open('app/resource/qss/mask_dialog.qss', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
+
+        f = QFile(':/qss/mask_dialog.qss')
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()

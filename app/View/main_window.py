@@ -1,5 +1,5 @@
 # coding: utf-8
-
+from app.common import resource
 from app.components.framelesswindow import FramelessWindow
 from app.components.widgets.pop_up_ani_stacked_widget import PopUpAniStackedWidget
 from PyQt5.QtGui import QIcon
@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QApplication, qApp
 
 from .chess_board_interface import ChessBoardInterface
 from .navigation_interface import NavigationInterface
-from .settinginterface import SettingInterface
+from .setting_interface import SettingInterface
 
 
 class MainWindow(FramelessWindow):
@@ -30,7 +30,7 @@ class MainWindow(FramelessWindow):
         self.resize(750, 850)
         self.setMinimumSize(700, 790)
         self.setWindowTitle('Alpha Gobang Zero')
-        self.setWindowIcon(QIcon(r'app\resource\images\icon\二哈.png'))
+        self.setWindowIcon(QIcon(':/images/icon/二哈.png'))
         self.navigationInterface.move(0, 40)
         self.stackedWidget.resize(750, 760)
         self.stackedWidget.move(0, 90)

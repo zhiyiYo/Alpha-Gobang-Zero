@@ -1,5 +1,5 @@
 # coding: utf-8
-from PyQt5.QtCore import Qt, QTimer, pyqtProperty, pyqtSignal
+from PyQt5.QtCore import Qt, QTimer, pyqtProperty, pyqtSignal, QFile
 from PyQt5.QtGui import QColor, QPainter, QMouseEvent
 from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QLabel, QToolButton,
                              QWidget)
@@ -131,9 +131,13 @@ class SwitchButton(QWidget):
         self.hBox.setAlignment(Qt.AlignLeft)
         self.setAttribute(Qt.WA_StyledBackground)
         self.hBox.setContentsMargins(0, 0, 0, 0)
+
         # 设置默认样式
-        with open('app/resource/qss/switch_button.qss', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
+        f = QFile(':/qss/switch_button.qss')
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
+
         # 信号连接到槽
         self.indicator.checkedChanged.connect(self.checkedChanged)
 

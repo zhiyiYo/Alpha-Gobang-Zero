@@ -1,29 +1,29 @@
-QWidget{
+QWidget {
     background-color: white;
     border: 1px solid rgb(200, 200, 200);
 }
 
-QWidget#windowMask{
+QWidget#windowMask {
     background-color: rgba(255, 255, 255, 0.6);
     border: none;
 }
 
-QLabel{
+QLabel {
     border: none;
 }
 
-QLabel#titleLabel{
-    font:25px 'Microsoft YaHei';
+QLabel#titleLabel {
+    font: 25px 'Segoe UI', 'Microsoft YaHei';
 }
 
-QLabel#subTitleLabel {
-    font: 18px 'Microsoft YaHei';
+QLabel#contentLabel {
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QPushButton {
     background-color: rgb(204, 204, 204);
     padding: 11px 64px 11px 64px;
-    font: 19px 'Microsoft YaHei';
+    font: 19px 'Segoe UI', 'Microsoft YaHei';
     border: transparent;
     height: 20px;
     width: 55px;

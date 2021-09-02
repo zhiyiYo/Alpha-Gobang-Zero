@@ -1,4 +1,4 @@
-QWidget{
+QWidget {
     background-color: white;
 }
 
@@ -9,33 +9,33 @@ QScrollArea {
 
 
 /* 标签 */
-QLabel{
-    font:18px 'Microsoft YaHei';
+QLabel {
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
 }
 
-QLabel#settingLabel{
-    font:41px 'Microsoft YaHei Light';
+QLabel#settingLabel {
+    font: 41px 'Segoe UI Semilight', 'Microsoft YaHei Light';
 }
 
-QLabel#titleLabel{
-    font:29px 'Microsoft YaHei';
+QLabel#titleLabel {
+    font: 29px 'Segoe UI', 'Microsoft YaHei';
 }
 
-QLabel#clickableLabel{
+QLabel#clickableLabel {
     /*color: rgb(0,107,131);*/
     color: rgb(0, 153, 188);
-    font:18px 'Microsoft YaHei';
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QLabel#clickableLabel:hover {
-    color: rgb(154,154,154);
+    color: rgb(154, 154, 154);
 }
 
 /* 单选按钮 */
 QRadioButton {
     spacing: 10px;
     color: black;
-    font: 18px 'Microsoft YaHei';
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
     background-color: transparent;
 }
 
@@ -92,11 +92,13 @@ QRadioButton::indicator:checked:pressed {
 /* 滚动条 */
 QScrollBar {
     background: transparent;
-    width: 3px;
+    width: 4px;
+    margin-bottom: 133px;
+    padding-right: 1px;
 }
 
 /*隐藏上箭头*/
-QScrollBarr::sub-line {
+QScrollBar::sub-line {
     background: transparent;
 }
 
@@ -107,7 +109,8 @@ QScrollBar::add-line {
 
 QScrollBar::handle {
     background: rgb(122, 122, 122);
-    border: 0px solid transparent;
+    border: 2px solid rgb(128, 128, 128);
+    border-radius: 1px;
     min-height: 40px;
 }
 
@@ -115,6 +118,8 @@ QScrollBar::add-page:vertical,
 QScrollBar::sub-page:vertical {
     background: none;
 }
+
+
 /* 水平滑动条 */
 QSlider:horizontal {
     height: 26px;
@@ -123,15 +128,16 @@ QSlider:horizontal {
 }
 
 QSlider::groove:horizontal {
-    width: 188px;
     border: none;
-    background-color: transparent;
+    height: 4px;
 }
 
 QSlider::handle:horizontal {
     width: 26px;
     height: 26px;
     border-radius: 13px;
+    margin-top: -11px;
+    margin-bottom: -11px;
     background-color: rgb(0, 153, 188);
 }
 
@@ -147,24 +153,23 @@ QSlider::handle:horizontal:pressed {
 QSlider::sub-page:horizontal {
     /*已划过部分的颜色*/
     background: rgb(0, 153, 187);
-    margin-top: 11px;
-    margin-bottom: 11px;
+    height: 4px;
+    border-radius: 2px;
 }
 
 QSlider::add-page:horizontal {
-    background-color: rgb(130, 131, 134);
-    margin-top: 11px;
-    margin-bottom: 11px;
+    background-color: rgb(153, 153, 153);
+    height: 4px;
+    border-radius: 2px;
 }
 
 /* 按钮 */
 QPushButton {
     background-color: rgb(204, 204, 204);
-    font: 18px 'Microsoft YaHei';
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
     border: transparent;
     border-radius: 4px;
-    height: 20px;
-    width: 55px;
+    padding: 9px 12px 9px 12px;
 }
 
 QPushButton:pressed:hover {

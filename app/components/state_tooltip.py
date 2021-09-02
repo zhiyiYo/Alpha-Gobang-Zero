@@ -1,7 +1,7 @@
 # coding:utf-8
-from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, Qt, QTimer
+from PyQt5.QtCore import QEasingCurve, QFile, QPropertyAnimation, Qt, QTimer
 from PyQt5.QtGui import QPainter, QPixmap
-from PyQt5.QtWidgets import QLabel, QWidget, QToolButton
+from PyQt5.QtWidgets import QLabel, QToolButton, QWidget
 
 
 class StateTooltip(QWidget):
@@ -29,8 +29,8 @@ class StateTooltip(QWidget):
         self.rotateTimer = QTimer(self)
         self.closeTimer = QTimer(self)
         self.animation = QPropertyAnimation(self, b"windowOpacity")
-        self.busyImage = QPixmap("app/resource/images/state_tooltip/running.png")
-        self.doneImage = QPixmap("app/resource/images/state_tooltip/completed.png")
+        self.busyImage = QPixmap(":/images/state_tooltip/running.png")
+        self.doneImage = QPixmap(":/images/state_tooltip/completed.png")
         self.closeButton = QToolButton(self)
         # 初始化参数
         self.isDone = False
@@ -68,8 +68,11 @@ class StateTooltip(QWidget):
         """ 设置层叠样式 """
         self.titleLabel.setObjectName("titleLabel")
         self.contentLabel.setObjectName("contentLabel")
-        with open("app/resource/qss/state_tooltip.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+
+        f = QFile(':/qss/state_tooltip.qss')
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def setTitle(self, title: str):
         """ 设置提示框的标题 """
@@ -122,6 +125,5 @@ class StateTooltip(QWidget):
                 self.busyImage,
             )
         else:
-            painter.drawPixmap(
-                14, 13, self.doneImage.width(), self.doneImage.height(), self.doneImage
-            )
+            painter.drawPixmap(14, 13, self.doneImage.width(),
+                               self.doneImage.height(), self.doneImage)

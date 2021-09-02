@@ -1,5 +1,6 @@
 QPushButton{
     background: transparent;
+    font: 17px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QPushButton:hover{

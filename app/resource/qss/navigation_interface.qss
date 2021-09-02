@@ -17,7 +17,6 @@ QToolButton:pressed {
 }
 
 QLabel {
-    font: 25px "Microsoft YaHei";
+    font: 25px 'Segoe UI', 'Microsoft YaHei';
     font-weight: bold;
-
 }

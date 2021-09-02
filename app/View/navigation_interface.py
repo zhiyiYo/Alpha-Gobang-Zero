@@ -1,10 +1,10 @@
 # coding:utf-8
 from app.common.windoweffect import WindowEffect
 from app.components.widgets.button import NavigationButton
-from PyQt5.QtCore import (QEasingCurve, QPoint, QPropertyAnimation, QRect, Qt,
-                          pyqtSignal)
+from PyQt5.QtCore import (QEasingCurve, QFile, QPoint, QPropertyAnimation,
+                          QRect, Qt, pyqtSignal)
 from PyQt5.QtGui import QColor, QIcon, QPainter, QPen
-from PyQt5.QtWidgets import QLabel, QToolButton, QWidget, QApplication
+from PyQt5.QtWidgets import QApplication, QLabel, QToolButton, QWidget
 
 
 class NavigationInterface(QWidget):
@@ -14,7 +14,7 @@ class NavigationInterface(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.title = QLabel('棋盘', self)
+        self.title = QLabel(self.tr('Chess board'), self)
         self.navigationButton = QToolButton(self)
         self.navigationMenu = NavigationMenu(self)
         # 初始化界面
@@ -27,7 +27,7 @@ class NavigationInterface(QWidget):
         self.navigationMenu.move(self.mapToGlobal(QPoint(0, 0)))
         self.navigationButton.setFixedSize(50, 50)
         self.navigationButton.setIcon(
-            QIcon(r'app\resource\images\navigation_menu\显示导航菜单.png'))
+            QIcon(':images/navigation_menu/显示导航菜单.png'))
         # 设置层叠样式
         self.__setQss()
         # 信号连接到槽
@@ -35,8 +35,10 @@ class NavigationInterface(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(r'app\resource\qss\navigation_interface.qss', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
+        f = QFile(':/qss/navigation_interface.qss')
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
@@ -56,19 +58,21 @@ class NavigationInterface(QWidget):
     def __boardButtonClickedSlot(self):
         """ 棋盘按钮点击槽函数 """
         self.navigationMenu.setSelectedButton(0)
-        self.title.setText('棋盘')
+        self.title.setText(self.tr('Chess board'))
         self.switchToChessBoardInterfaceSig.emit()
         self.navigationMenu.aniHide()
         self.navigationButton.setProperty('state', 'normal')
+        self.title.adjustSize()
         self.setStyle(QApplication.style())
 
     def __settingButtonClickedSlot(self):
         """ 设置按钮点击槽函数 """
         self.navigationMenu.setSelectedButton(1)
-        self.title.setText('设置')
+        self.title.setText(self.tr('Settings'))
         self.switchToSettingInterfaceSig.emit()
         self.navigationMenu.aniHide()
         self.navigationButton.setProperty('state', 'normal')
+        self.title.adjustSize()
         self.setStyle(QApplication.style())
 
     def resizeEvent(self, e):
@@ -84,9 +88,9 @@ class NavigationMenu(QWidget):
         # 创建按钮
         self.navigationButton = QToolButton(self)
         self.boardButton = NavigationButton(
-            '棋盘', r'app\resource\images\navigation_menu\棋盘.png', True, self)
+            self.tr('Chess board'), ':images/navigation_menu/棋盘.png', True, self)
         self.settingButton = NavigationButton(
-            '设置', r'app\resource\images\navigation_menu\设置.png', False, self)
+            self.tr('Settings'), ':images/navigation_menu/设置.png', False, self)
         self.button_list = [self.boardButton, self.settingButton]
         # 实例化窗口特效和动画
         self.windowEffect = WindowEffect()
@@ -104,7 +108,7 @@ class NavigationMenu(QWidget):
         self.settingButton.move(0, self.height()-60)
         self.navigationButton.setFixedSize(50, 50)
         self.navigationButton.setIcon(
-            QIcon(r'app\resource\images\navigation_menu\显示导航菜单.png'))
+            QIcon(':images/navigation_menu/显示导航菜单.png'))
 
     def aniShow(self):
         """ 动画显示 """

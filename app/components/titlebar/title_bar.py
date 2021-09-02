@@ -1,7 +1,7 @@
 # coding:utf-8
 
 from app.components.widgets.button import ThreeStateToolButton
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QFile
 from PyQt5.QtGui import QPixmap, QResizeEvent
 from PyQt5.QtWidgets import QLabel, QWidget
 from win32.lib import win32con
@@ -20,13 +20,13 @@ class TitleBar(QWidget):
         self.icon = QLabel(self)
         # 如果直接使用qss来画图标会糊掉
         self.minBt = ThreeStateToolButton(
-            {'normal': r'app\resource\images\title_bar\最小化按钮_normal_57_40.png',
-             'hover': r'app\resource\images\title_bar\最小化按钮_hover_57_40.png',
-             'pressed': r'app\resource\images\title_bar\最小化按钮_pressed_57_40.png'}, (57, 40), self)
+            {'normal': ':/images/title_bar/最小化按钮_normal_57_40.png',
+             'hover': ':/images/title_bar/最小化按钮_hover_57_40.png',
+             'pressed': ':/images/title_bar/最小化按钮_pressed_57_40.png'}, (57, 40), self)
         self.closeBt = ThreeStateToolButton(
-            {'normal': r'app\resource\images\title_bar\关闭按钮_normal_57_40.png',
-             'hover': r'app\resource\images\title_bar\关闭按钮_hover_57_40.png',
-             'pressed': r'app\resource\images\title_bar\关闭按钮_pressed_57_40.png'}, (57, 40), self)
+            {'normal': ':/images/title_bar/关闭按钮_normal_57_40.png',
+             'hover': ':/images/title_bar/关闭按钮_hover_57_40.png',
+             'pressed': ':/images/title_bar/关闭按钮_pressed_57_40.png'}, (57, 40), self)
         self.maxBt = MaximizeButton(self)
         self.title = QLabel('Alpha Gobang Zero', self)
         # 初始化界面
@@ -39,7 +39,7 @@ class TitleBar(QWidget):
         self.icon.move(9, 9)
         self.title.move(34, 8)
         self.setAttribute(Qt.WA_StyledBackground)
-        self.icon.setPixmap(QPixmap(r'app\resource\images\icon\二哈.png').scaled(
+        self.icon.setPixmap(QPixmap(':/images/icon/二哈.png').scaled(
             20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         # 设置层叠样式
         self.__setQss()
@@ -91,5 +91,7 @@ class TitleBar(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(r'app\resource\qss\title_bar.qss', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
+        f = QFile(':/qss/title_bar.qss')
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()

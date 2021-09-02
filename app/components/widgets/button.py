@@ -1,5 +1,5 @@
 # coding:utf-8
-from PyQt5.QtCore import QSize, Qt
+from PyQt5.QtCore import QFile, QSize, Qt
 from PyQt5.QtGui import QBrush, QColor, QFont, QIcon, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import QPushButton, QToolButton
 
@@ -68,8 +68,8 @@ class NavigationButton(QPushButton):
         self.__iconPixmap = QPixmap(iconPath)
         self.__isSelected = isSelected
         self.__text = text
-        self.setFixedSize(320, 50)
         self.__setQss()
+        self.setFixedSize(320, 50)
 
     def setSelected(self, isSelected: bool):
         """ 设置按钮选中状态 """
@@ -82,11 +82,13 @@ class NavigationButton(QPushButton):
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing)
         painter.setPen(Qt.NoPen)
+
         # 绘制图标
         painter.drawPixmap(15, 15, self.__iconPixmap)
+
         # 绘制文本
         painter.setPen(QPen(Qt.black))
-        painter.setFont(QFont("Microsoft YaHei", 11, 25))
+        painter.setFont(self.font())
         painter.drawText(50, 15 + 16, self.__text)
         # 绘制选中标志
         if self.__isSelected:
@@ -96,5 +98,7 @@ class NavigationButton(QPushButton):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(r'app\resource\qss\navigation_button.qss', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
+        f = QFile(':/qss/navigation_button.qss')
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()

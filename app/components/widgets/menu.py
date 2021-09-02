@@ -1,7 +1,8 @@
 # coding:utf-8
 
 from app.common.windoweffect import WindowEffect
-from PyQt5.QtCore import QEasingCurve, QEvent, QPropertyAnimation, QRect, Qt
+from PyQt5.QtCore import (QEasingCurve, QEvent, QFile, QPropertyAnimation,
+                          QRect, Qt)
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
@@ -15,9 +16,9 @@ class ChessBoardMenu(QMenu):
         self.animation = QPropertyAnimation(self, b'geometry')
         # 创建动作
         self.restartGameAct = QAction(
-            QIcon(r'app\resource\images\chess_board_interface\重新开始.png'), '重新开始', self)
+            QIcon(':/images/chess_board_interface/重新开始.png'), self.tr('Restart'), self)
         self.settingAct = QAction(
-            QIcon(r'app\resource\images\chess_board_interface\设置.png'), '设置', self)
+            QIcon(':/images/chess_board_interface/设置.png'), self.tr('Settings'), self)
         self.action_list = [self.restartGameAct, self.settingAct]
         self.addActions(self.action_list)
         self.__initWidget()
@@ -36,21 +37,24 @@ class ChessBoardMenu(QMenu):
         return QMenu.event(self, e)
 
     def exec_(self, pos):
-        width = 176
+        w = max(self.fontMetrics().width(i.text()) for i in self.actions())+70
         actionNum = len(self.action_list)
+
         # 每个item的高度为38px，10为上下的内边距和
-        height = actionNum * 38 + 10
+        h = actionNum * 38 + 10
+
         # 设置动画
-        self.animation.setStartValue(
-            QRect(pos.x(), pos.y(), 1, height))
-        self.animation.setEndValue(
-            QRect(pos.x(), pos.y(), width, height))
+        self.animation.setStartValue(QRect(pos.x(), pos.y(), 1, h))
+        self.animation.setEndValue(QRect(pos.x(), pos.y(), w, h))
         self.setStyle(QApplication.style())
+
         # 开始动画
         self.animation.start()
         super().exec_(pos)
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(r'app\resource\qss\menu.qss', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
+        f = QFile(':/qss/menu.qss')
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
