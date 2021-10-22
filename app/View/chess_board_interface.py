@@ -6,8 +6,8 @@ from alphazero.chess_board import ChessBoard
 from app.common.ai_thread import AIThread
 from app.components.chesses.chess import Chess
 from app.components.widgets.menu import ChessBoardMenu
+from app.components.widgets.state_tooltip import StateTooltip
 from app.components.dialogs.message_dialog import MessageDialog
-from app.components.state_tooltip import StateTooltip
 from PyQt5.QtCore import QPoint, QRect, Qt, pyqtSignal
 from PyQt5.QtGui import (QBrush, QCursor, QMouseEvent, QPainter, QPen, QPixmap,
                          QResizeEvent, QContextMenuEvent)
@@ -22,7 +22,7 @@ class ChessBoardInterface(QWidget):
     switchToSettingInterfaceSignal = pyqtSignal()
 
     def __init__(self, model, c_puct=5, n_mcts_iters=1500, is_human_first=True,
-                 is_use_gpu=True, boardLen=9, margin=37, gridSize=78, parent=None):
+                 is_use_gpu=True, boardLen=9, margin=37, gridSize=78, parent=None, **kwargs):
         """
         Parameters
         ----------
@@ -191,7 +191,7 @@ class ChessBoardInterface(QWidget):
 
         return updateOk
 
-    def __searchCompleteSlot(self, action: int):
+    def __onSearchComplete(self, action: int):
         """ AI 思考完成槽函数 """
         self.stateTooltip.setState(True)
         pos = (action//self.boardLen, action % self.boardLen)
@@ -218,10 +218,10 @@ class ChessBoardInterface(QWidget):
             msg = self.tr("it ends in a draw! Sure enough, the chessboard"
                           " is too small to play. Why don't you fight another game?")
 
-        continueGameDiaglog = MessageDialog(title, msg, self.window())
-        continueGameDiaglog.cancelSignal.connect(self.exitGameSignal)
-        continueGameDiaglog.yesSignal.connect(self.__restartGame)
-        continueGameDiaglog.exec_()
+        w = MessageDialog(title, msg, self.window())
+        w.cancelSignal.connect(self.exitGameSignal)
+        w.yesSignal.connect(self.__restartGame)
+        w.exec_()
 
     def __setCursor(self, isChess=True):
         """ 设置光标 """
@@ -288,7 +288,7 @@ class ChessBoardInterface(QWidget):
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
-        self.aiThread.searchComplete.connect(self.__searchCompleteSlot)
+        self.aiThread.searchComplete.connect(self.__onSearchComplete)
         self.contextMenu.restartGameAct.triggered.connect(self.__restartGame)
         self.contextMenu.settingAct.triggered.connect(
             self.switchToSettingInterfaceSignal)

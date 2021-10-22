@@ -45,9 +45,7 @@ class WindowEffect:
         # 初始化结构体
         self.accentPolicy = ACCENT_POLICY()
         self.winCompAttrData = WINDOWCOMPOSITIONATTRIBDATA()
-        self.winCompAttrData.Attribute = WINDOWCOMPOSITIONATTRIB.WCA_ACCENT_POLICY.value[
-            0
-        ]
+        self.winCompAttrData.Attribute = WINDOWCOMPOSITIONATTRIB.WCA_ACCENT_POLICY.value[0]
         self.winCompAttrData.SizeOfData = sizeof(self.accentPolicy)
         self.winCompAttrData.Data = pointer(self.accentPolicy)
 
@@ -89,9 +87,7 @@ class WindowEffect:
         animationId = DWORD(animationId)
         # 窗口阴影
         accentFlags = DWORD(shadowPos) if isEnableShadow else DWORD(0)
-        self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_ENABLE_ACRYLICBLURBEHIND.value[
-            0
-        ]
+        self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_ENABLE_ACRYLICBLURBEHIND.value[0]
         self.accentPolicy.GradientColor = gradientColor
         self.accentPolicy.AccentFlags = accentFlags
         self.accentPolicy.AnimationId = animationId
@@ -110,7 +106,13 @@ class WindowEffect:
         # 开启Aero
         self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
 
-    def moveWindow(self, hWnd):
+    def removeBackgroundEffect(self, hWnd):
+        """ 移除背景特效效果 """
+        self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_DISABLED.value[0]
+        self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
+
+    @staticmethod
+    def moveWindow(hWnd):
         """ 移动窗口
 
         Parameter
@@ -141,7 +143,8 @@ class WindowEffect:
         margins = MARGINS(-1, -1, -1, -1)
         self.DwmExtendFrameIntoClientArea(hWnd, byref(margins))
 
-    def addWindowAnimation(self, hWnd):
+    @staticmethod
+    def addWindowAnimation(hWnd):
         """ 打开窗口动画效果
 
         Parameters

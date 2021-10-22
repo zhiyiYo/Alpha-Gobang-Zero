@@ -92,9 +92,8 @@ QRadioButton::indicator:checked:pressed {
 /* 滚动条 */
 QScrollBar {
     background: transparent;
-    width: 4px;
-    margin-bottom: 133px;
-    padding-right: 1px;
+    width: 5px;
+    margin-right: 2px;
 }
 
 /*隐藏上箭头*/

@@ -273,7 +273,7 @@ class ModelCard(FoldingWindow):
     def __init__(self, modelPath: str, parent=None):
         super().__init__(parent)
         self.modelPath = modelPath
-        self.modelName = self.modelPath.split("\\")[-1]
+        self.modelName = os.path.split(modelPath)[-1]
         self.image = QPixmap(":/images/setting_interface/黑色叉号.png")
         self.show()
 

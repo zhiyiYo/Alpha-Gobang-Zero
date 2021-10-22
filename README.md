@@ -83,6 +83,21 @@
 * [《Mastering the game of Go without human knowledge》](https://www.nature.com/articles/nature24270.epdf?author_access_token=VJXbVjaSHxFoctQQ4p2k4tRgN0jAjWel9jnR3ZoTv0PVW4gB86EEpGqTRDtpIz-2rmo8-KG06gqVobU5NSCFeHILHcVFUeMsbvwS-lxjqQGg98faovwjxeTUgZAUMnRQ)
 * [《Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm》](https://arxiv.org/abs/1712.01815)
 
+
+## FAQs
+* **Why does the window get stuck when it is dragged?**
+
+  Because the interface background uses acrylic effect, this problem will occur for some versions of win10. There are three solutions:
+
+  * Upgrade win10 to the latest version.
+  * Uncheck the check box of **Advanced system settings --> Performance --> Show window contents when dragging**.
+  * Turn off the option to enable acrylic background in the setting interface.
+
+* **Why does the configuration I modified in the settings interface not take effect immediately?**
+
+  The modified configuration will take effect at the beginning of the next game.
+
+
 ## License
 ```
 MIT License

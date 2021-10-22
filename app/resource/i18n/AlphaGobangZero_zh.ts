@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="zh_CN">
+<!DOCTYPE TS><TS version="2.0" language="zh_CN" sourcelanguage="">
 <context>
     <name>ChessBoardInterface</name>
     <message>
@@ -76,12 +75,12 @@
 <context>
     <name>NavigationInterface</name>
     <message>
-        <location filename="../../View/navigation_interface.py" line="61"/>
+        <location filename="../../View/navigation_interface.py" line="70"/>
         <source>Chess board</source>
         <translation>棋盘</translation>
     </message>
     <message>
-        <location filename="../../View/navigation_interface.py" line="71"/>
+        <location filename="../../View/navigation_interface.py" line="73"/>
         <source>Settings</source>
         <translation>设置</translation>
     </message>
@@ -89,12 +88,12 @@
 <context>
     <name>NavigationMenu</name>
     <message>
-        <location filename="../../View/navigation_interface.py" line="90"/>
+        <location filename="../../View/navigation_interface.py" line="94"/>
         <source>Chess board</source>
         <translation>棋盘</translation>
     </message>
     <message>
-        <location filename="../../View/navigation_interface.py" line="92"/>
+        <location filename="../../View/navigation_interface.py" line="96"/>
         <source>Settings</source>
         <translation>设置</translation>
     </message>
@@ -160,74 +159,84 @@
 <context>
     <name>SettingInterface</name>
     <message>
-        <location filename="../../View/setting_interface.py" line="24"/>
+        <location filename="../../View/setting_interface.py" line="37"/>
         <source>Alpha Gobang in this PC</source>
         <translation>此 PC 上的阿尔法狗</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface.py" line="26"/>
+        <location filename="../../View/setting_interface.py" line="39"/>
         <source>Choose where we look for Alpha Gobang</source>
         <translation>选择阿尔法狗的位置</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface.py" line="30"/>
+        <location filename="../../View/setting_interface.py" line="51"/>
         <source>Graphics Card</source>
         <translation>显卡</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface.py" line="32"/>
+        <location filename="../../View/setting_interface.py" line="53"/>
         <source>Use GPU to speed up Alpha Gobang thinking (if available)</source>
         <translation>使用 GPU 加速阿尔法狗的思考(如可用)</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface.py" line="36"/>
+        <location filename="../../View/setting_interface.py" line="57"/>
         <source>Offensive Position</source>
         <translation>先手</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface.py" line="38"/>
+        <location filename="../../View/setting_interface.py" line="59"/>
         <source>Alpha Gobang</source>
         <translation>阿尔法狗</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface.py" line="40"/>
+        <location filename="../../View/setting_interface.py" line="61"/>
         <source>Human</source>
         <translation>人类</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface.py" line="46"/>
+        <location filename="../../View/setting_interface.py" line="67"/>
         <source>Set exploration constant</source>
         <translation>调整探索常数</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface.py" line="48"/>
+        <location filename="../../View/setting_interface.py" line="69"/>
         <source>Set search times</source>
         <translation>调整搜索次数</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface.py" line="56"/>
+        <location filename="../../View/setting_interface.py" line="77"/>
         <source>About this App</source>
         <translation>关于此应用</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface.py" line="58"/>
+        <location filename="../../View/setting_interface.py" line="79"/>
         <source>Send feedback</source>
         <translation>发送反馈</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface.py" line="187"/>
+        <location filename="../../View/setting_interface.py" line="220"/>
         <source>On</source>
         <translation>开</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface.py" line="187"/>
+        <location filename="../../View/setting_interface.py" line="220"/>
         <source>Off</source>
         <translation>关</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface.py" line="43"/>
+        <location filename="../../View/setting_interface.py" line="64"/>
         <source>Monte Carlo tree</source>
         <translation>蒙特卡洛树</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface.py" line="43"/>
+        <source>Acrylic Background</source>
+        <translation>亚克力背景</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface.py" line="45"/>
+        <source>Use the acrylic background effect</source>
+        <translation>使用亚克力背景效果</translation>
     </message>
 </context>
 </TS>

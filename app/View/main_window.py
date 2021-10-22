@@ -2,7 +2,9 @@
 from app.common import resource
 from app.components.framelesswindow import FramelessWindow
 from app.components.widgets.pop_up_ani_stacked_widget import PopUpAniStackedWidget
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
+from PyQt5.QtWinExtras import QtWin
 from PyQt5.QtWidgets import QApplication, qApp
 
 from .chess_board_interface import ChessBoardInterface
@@ -26,11 +28,15 @@ class MainWindow(FramelessWindow):
 
     def initWidget(self):
         """ 初始化界面 """
-        # 设置窗口大小
         self.resize(750, 850)
         self.setMinimumSize(700, 790)
+        self.setObjectName("mainWindow")
         self.setWindowTitle('Alpha Gobang Zero')
         self.setWindowIcon(QIcon(':/images/icon/二哈.png'))
+        QtWin.enableBlurBehindWindow(self)
+        self.setWindowFlags(Qt.FramelessWindowHint |
+                            Qt.WindowMinMaxButtonsHint)
+        self.windowEffect.addWindowAnimation(self.winId())
         self.navigationInterface.move(0, 40)
         self.stackedWidget.resize(750, 760)
         self.stackedWidget.move(0, 90)
@@ -47,9 +53,13 @@ class MainWindow(FramelessWindow):
         )
         # 信号连接到槽
         self.connectSignalToSlot()
+        # 设置窗口特效
+        self.setWindowEffect(self.settingInterface.config["is_enable_acrylic"])
 
     def connectSignalToSlot(self):
         """ 信号连接到槽 """
+        self.settingInterface.enableAcrylicChanged.connect(
+            self.setWindowEffect)
         self.chessBoardInterface.exitGameSignal.connect(self.exitGame)
         self.chessBoardInterface.restartGameSignal.connect(
             self.updateGameConfig)
@@ -74,12 +84,12 @@ class MainWindow(FramelessWindow):
         """ 切换到棋盘界面 """
         self.stackedWidget.setCurrentWidget(
             self.chessBoardInterface, True, False)
+        self.navigationInterface.switchInterface('Chess board')
 
     def switchToSettingInterface(self):
         """ 切换到设置界面 """
         self.stackedWidget.setCurrentWidget(self.settingInterface, False)
-        if self.sender() is self.chessBoardInterface:
-            self.navigationInterface.navigationMenu.setSelectedButton(1)
+        self.navigationInterface.switchInterface('Settings')
 
     def resizeEvent(self, e):
         super().resizeEvent(e)
@@ -97,3 +107,13 @@ class MainWindow(FramelessWindow):
         self.chessBoardInterface.move(
             (self.width()-self.chessBoardInterface.width())//2,
             (self.height()-self.chessBoardInterface.height())//2-45)
+
+    def setWindowEffect(self, isEnableAcrylic: bool):
+        """ 设置窗口特效 """
+        if isEnableAcrylic:
+            self.windowEffect.setAcrylicEffect(self.winId(), "F2F2F2F2", True)
+            self.setStyleSheet("#mainWindow{background:transparent}")
+        else:
+            self.setStyleSheet("#mainWindow{background:#F0F0F0}")
+            self.windowEffect.addShadowEffect(self.winId())
+            self.windowEffect.removeBackgroundEffect(self.winId())

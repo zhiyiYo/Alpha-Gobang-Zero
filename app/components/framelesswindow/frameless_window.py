@@ -25,9 +25,9 @@ class FramelessWindow(QWidget):
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowSystemMenuHint |
                             Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
         # 设置亚克力效果和窗口动画
-        self.setStyleSheet('background:transparent')
+        self.windowEffect.addShadowEffect(self.winId())
         self.windowEffect.addWindowAnimation(self.winId())
-        self.windowEffect.setAcrylicEffect(self.winId(), 'F2F2F2F2')
+        # self.windowEffect.setAcrylicEffect(self.winId(), 'F2F2F2F2')
         self.resize(500, 500)
         self.titleBar.raise_()
 

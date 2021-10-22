@@ -46,30 +46,34 @@ class NavigationInterface(QWidget):
         self.navigationMenu.navigationButton.clicked.connect(
             self.navigationMenu.aniHide)
         self.navigationMenu.boardButton.clicked.connect(
-            self.__boardButtonClickedSlot)
+            self.switchToChessBoardInterfaceSig)
         self.navigationMenu.settingButton.clicked.connect(
-            self.__settingButtonClickedSlot)
+            self.switchToSettingInterfaceSig)
+        self.navigationMenu.boardButton.clicked.connect(
+            lambda: self.switchInterface("Chess board"))
+        self.navigationMenu.settingButton.clicked.connect(
+            lambda: self.switchInterface("Settings"))
 
     def __showNavigationMenu(self):
         """ 显示导航菜单 """
         self.navigationMenu.move(self.mapToGlobal(QPoint(0, 0)))
         self.navigationMenu.aniShow()
 
-    def __boardButtonClickedSlot(self):
-        """ 棋盘按钮点击槽函数 """
-        self.navigationMenu.setSelectedButton(0)
-        self.title.setText(self.tr('Chess board'))
-        self.switchToChessBoardInterfaceSig.emit()
-        self.navigationMenu.aniHide()
-        self.navigationButton.setProperty('state', 'normal')
-        self.title.adjustSize()
-        self.setStyle(QApplication.style())
+    def switchInterface(self, name):
+        """ 切换界面，更新按钮样式和标题
 
-    def __settingButtonClickedSlot(self):
-        """ 设置按钮点击槽函数 """
-        self.navigationMenu.setSelectedButton(1)
-        self.title.setText(self.tr('Settings'))
-        self.switchToSettingInterfaceSig.emit()
+        name: str
+            界面名称，可以是 `Settings` 或者 `Chess board`
+        """
+        if name == 'Chess board':
+            self.navigationMenu.setSelectedButton(0)
+            self.title.setText(self.tr('Chess board'))
+        elif name == 'Settings':
+            self.navigationMenu.setSelectedButton(1)
+            self.title.setText(self.tr('Settings'))
+        else:
+            raise ValueError("界面名称非法")
+
         self.navigationMenu.aniHide()
         self.navigationButton.setProperty('state', 'normal')
         self.title.adjustSize()
@@ -123,11 +127,11 @@ class NavigationMenu(QWidget):
         """ 动画隐藏 """
         self.__ani.setStartValue(QRect(self.x(), self.y(), 320, self.height()))
         self.__ani.setEndValue(QRect(self.x(), self.y(), 50, self.height()))
-        self.__ani.finished.connect(self.__hideAniFinishedSlot)
+        self.__ani.finished.connect(self.__onHideAniFinished)
         self.__ani.setDuration(85)
         self.__ani.start()
 
-    def __hideAniFinishedSlot(self):
+    def __onHideAniFinished(self):
         """ 隐藏窗体的动画结束 """
         super().hide()
         self.resize(1, self.height())

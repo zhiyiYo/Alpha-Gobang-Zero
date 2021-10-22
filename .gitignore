@@ -17,5 +17,8 @@ log/
 test.py
 demo.py
 
+# 忽略配置文件
+config/
+
 # 忽略备份文件夹
 backup/
