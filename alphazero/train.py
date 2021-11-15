@@ -2,6 +2,7 @@
 import json
 import os
 import time
+import traceback
 
 import torch
 import torch.nn.functional as F
@@ -20,19 +21,24 @@ def save_model(train_func):
     def wrapper(train_pipe_line, *args, **kwargs):
         try:
             train_func(train_pipe_line)
-        except:
+        except BaseException as e:
+            if not isinstance(e, KeyboardInterrupt):
+                traceback.print_exc()
+                
             os.makedirs('model', exist_ok=True)
+
             t = time.strftime('%Y-%m-%d_%H-%M-%S',
                               time.localtime(time.time()))
-            path = f'model\\last_policy_value_net_{t}.pth'
+            path = f'model/last_policy_value_net_{t}.pth'
             train_pipe_line.policy_value_net.eval()
             torch.save(train_pipe_line.policy_value_net, path)
             print(f'🎉 训练结束，已将当前模型保存到 {os.path.join(os.getcwd(), path)}')
+
             # 保存数据
-            with open('log\\train_losses.json', 'w', encoding='utf-8') as f:
+            with open('log/train_losses.json', 'w', encoding='utf-8') as f:
                 json.dump(train_pipe_line.train_losses, f)
             if train_pipe_line.is_save_game:
-                with open('log\\games.json', 'w', encoding='utf-8') as f:
+                with open('log/games.json', 'w', encoding='utf-8') as f:
                     json.dump(train_pipe_line.games, f)
     return wrapper
 
