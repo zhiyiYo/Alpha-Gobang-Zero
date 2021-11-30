@@ -14,7 +14,7 @@ translator.load(QLocale.system(), ':/i18n/AlphaGobangZero_')
 app.installTranslator(translator)
 
 # 创建主界面
-w = MainWindow()
+w = MainWindow(board_len=13)
 w.show()
 
 sys.exit(app.exec_())

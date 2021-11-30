@@ -22,7 +22,7 @@ class ChessBoardInterface(QWidget):
     switchToSettingInterfaceSignal = pyqtSignal()
 
     def __init__(self, model, c_puct=5, n_mcts_iters=1500, is_human_first=True,
-                 is_use_gpu=True, boardLen=9, margin=37, gridSize=78, parent=None, **kwargs):
+                 is_use_gpu=True, boardLen=9, margin=37, parent=None, **kwargs):
         """
         Parameters
         ----------
@@ -58,7 +58,6 @@ class ChessBoardInterface(QWidget):
         self.margin = margin
         self.isEnableAI = True
         self.boardLen = boardLen
-        self.gridSize = gridSize
         self.isUseGPU = is_use_gpu
         self.isAIThinking = False
         self.previousAIChess = None
@@ -70,6 +69,10 @@ class ChessBoardInterface(QWidget):
             self.chessBoard, model, c_puct, n_mcts_iters, is_use_gpu, parent=self)
         self.humanColor = ChessBoard.BLACK if is_human_first else ChessBoard.WHITE
         self.AIColor = ChessBoard.BLACK if not is_human_first else ChessBoard.WHITE
+
+        # 根据棋盘大小调整网格大小
+        self.gridSize=78 - (max(11, boardLen)-11)*5
+
         self.__initWidget()
 
     def __initWidget(self):
@@ -108,8 +111,8 @@ class ChessBoardInterface(QWidget):
         y = self.height()//2-r
         painter.drawEllipse(x, y, 2*r, 2*r)
         for pos in [(-1, -1), (1, -1), (-1, 1), (1, 1)]:
-            x_ = self.gridSize*pos[0]*(self.boardLen-1)//2/2 + x
-            y_ = self.gridSize*pos[1]*(self.boardLen-1)//2/2 + y
+            x_ = self.gridSize*pos[0]*((self.boardLen-1)//4) + x
+            y_ = self.gridSize*pos[1]*((self.boardLen-1)//4) + y
             painter.drawEllipse(x_, y_, 2*r, 2*r)
 
     def mousePressEvent(self, e: QMouseEvent) -> None:
@@ -208,7 +211,7 @@ class ChessBoardInterface(QWidget):
             self.isEnableAI = True  # 解锁
             return
 
-        title=self.tr('Game over')
+        title = self.tr('Game over')
         if winner == self.humanColor:
             msg = self.tr("Congratulations on winning the game. AI said"
                           " he didn't accept it. Why don't we fight another game?")

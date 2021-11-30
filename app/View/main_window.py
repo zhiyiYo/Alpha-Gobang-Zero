@@ -15,13 +15,13 @@ from .setting_interface import SettingInterface
 class MainWindow(FramelessWindow):
     """ 主界面 """
 
-    def __init__(self):
+    def __init__(self, board_len=9):
         super().__init__(parent=None)
-        self.boardLen = 9
+        self.boardLen = board_len
         self.navigationInterface = NavigationInterface(self)
         self.settingInterface = SettingInterface()
         self.chessBoardInterface = ChessBoardInterface(
-            **self.settingInterface.config)
+            boardLen=board_len, **self.settingInterface.config)
         self.stackedWidget = PopUpAniStackedWidget(self)
         # 初始化
         self.initWidget()
@@ -40,11 +40,13 @@ class MainWindow(FramelessWindow):
         self.navigationInterface.move(0, 40)
         self.stackedWidget.resize(750, 760)
         self.stackedWidget.move(0, 90)
+
         # 子窗口添加到层叠窗口中
         self.stackedWidget.addWidget(
             self.chessBoardInterface, 0, 0, isNeedOpacityAni=False)
         self.stackedWidget.addWidget(
             self.settingInterface, 0, 120, isNeedOpacityAni=False)
+
         # 在去除任务栏的显示区域居中显示
         desktop = QApplication.desktop().availableGeometry()
         self.move(

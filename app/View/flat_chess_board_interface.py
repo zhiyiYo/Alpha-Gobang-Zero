@@ -10,9 +10,9 @@ from PyQt5.QtWidgets import QWidget
 class FlatChessBoardInterface(QWidget):
     """ 只用来绘制棋谱的扁平化棋盘界面 """
 
-    def __init__(self, parent=None):
+    def __init__(self, board_len=9, parent=None):
         super().__init__(parent=parent)
-        self.boardLen = 9
+        self.boardLen = board_len
         self.gridSize = 60
         self.margin = 30
         self.chesses = []  # type: List[FlatChess]
