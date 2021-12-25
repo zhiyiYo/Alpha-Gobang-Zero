@@ -24,7 +24,7 @@ def save_model(train_func):
         except BaseException as e:
             if not isinstance(e, KeyboardInterrupt):
                 traceback.print_exc()
-                
+
             os.makedirs('model', exist_ok=True)
 
             t = time.strftime('%Y-%m-%d_%H-%M-%S',
@@ -142,8 +142,8 @@ class TrainModel:
         # 实例化数据集
         self.dataset = SelfPlayDataSet(board_len)
         # 记录数据
-        self.train_losses = self.__load_data('log\\train_losses.json')
-        self.games = self.__load_data('log\\games.json')
+        self.train_losses = self.__load_data('log/train_losses.json')
+        self.games = self.__load_data('log/games.json')
 
     def __self_play(self):
         """ 自我博弈一局
@@ -161,15 +161,18 @@ class TrainModel:
         self.chess_board.clear_board()
         pi_list, feature_planes_list, players = [], [], []
         action_list = []
+
         # 开始一局游戏
         while True:
             action, pi = self.mcts.get_action(self.chess_board)
+
             # 保存每一步的数据
             feature_planes_list.append(self.chess_board.get_feature_planes())
             players.append(self.chess_board.current_player)
             action_list.append(action)
             pi_list.append(pi)
             self.chess_board.do_action(action)
+
             # 判断游戏是否结束
             is_over, winner = self.chess_board.is_game_over()
             if is_over:
@@ -232,7 +235,10 @@ class TrainModel:
 
     def __test_model(self):
         """ 测试模型 """
-        model_path = 'model\\best_policy_value_net.pth'
+        os.makedirs('model', exist_ok=True)
+
+        model_path = 'model/best_policy_value_net.pth'
+
         # 如果最佳模型不存在保存当前模型为最佳模型
         if not os.path.exists(model_path):
             torch.save(self.policy_value_net, model_path)
@@ -282,12 +288,15 @@ class TrainModel:
 
     def __get_policy_value_net(self):
         """ 创建策略-价值网络，如果存在历史最优模型则直接载入最优模型 """
+        os.makedirs('model', exist_ok=True)
+        
         best_model = 'best_policy_value_net.pth'
         history_models = sorted(
             [i for i in os.listdir('model') if i.startswith('last')])
+
         # 从历史模型中选取最新模型
         model = history_models[-1] if history_models else best_model
-        model = f'model\\{model}'
+        model = f'model/{model}'
         if os.path.exists(model):
             print(f'💎 载入模型 {model} ...\n')
             net = torch.load(model).to(self.device)  # type:PolicyValueNet
