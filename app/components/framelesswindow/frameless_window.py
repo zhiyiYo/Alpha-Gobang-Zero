@@ -24,10 +24,14 @@ class FramelessWindow(QWidget):
         # 取消边框
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowSystemMenuHint |
                             Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
-        # 设置亚克力效果和窗口动画
+
+        # 设置窗口动画和阴影
         self.windowEffect.addShadowEffect(self.winId())
         self.windowEffect.addWindowAnimation(self.winId())
-        # self.windowEffect.setAcrylicEffect(self.winId(), 'F2F2F2F2')
+
+        # 修复多屏不同 dpi 的显示问题
+        self.windowHandle().screenChanged.connect(self.__onScreenChanged)
+
         self.resize(500, 500)
         self.titleBar.raise_()
 
@@ -118,3 +122,8 @@ class FramelessWindow(QWidget):
         params.rgrc[0].top = self.__monitor_info['Work'][1]
         params.rgrc[0].right = self.__monitor_info['Work'][2]
         params.rgrc[0].bottom = self.__monitor_info['Work'][3]
+
+    def __onScreenChanged(self):
+        hWnd = int(self.windowHandle().winId())
+        win32gui.SetWindowPos(hWnd, None, 0, 0, 0, 0, win32con.SWP_NOMOVE |
+                              win32con.SWP_NOSIZE | win32con.SWP_FRAMECHANGED)
