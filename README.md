@@ -57,7 +57,7 @@
     pip install -r requirements.txt
     ```
 
-2. Install `PyTorch`，refer to the blog [《Pytorch 的安装》](https://blog.csdn.net/qq_23013309/article/details/103965619) for details；
+2. Install `PyTorch`，refer to the [blog](https://www.cnblogs.com/zhiyiYo/p/15865454.html) for details；
 
 
 3. Start game:
