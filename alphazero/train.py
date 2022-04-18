@@ -16,8 +16,8 @@ from .policy_value_net import PolicyValueNet
 from .self_play_dataset import SelfPlayData, SelfPlayDataSet
 
 
-def save_model(train_func):
-    """ 保存模型 """
+def exception_handler(train_func):
+    """ 异常处理装饰器 """
     def wrapper(train_pipe_line, *args, **kwargs):
         try:
             train_func(train_pipe_line)
@@ -25,21 +25,11 @@ def save_model(train_func):
             if not isinstance(e, KeyboardInterrupt):
                 traceback.print_exc()
 
-            os.makedirs('model', exist_ok=True)
-
             t = time.strftime('%Y-%m-%d_%H-%M-%S',
                               time.localtime(time.time()))
-            path = f'model/last_policy_value_net_{t}.pth'
-            train_pipe_line.policy_value_net.eval()
-            torch.save(train_pipe_line.policy_value_net, path)
-            print(f'🎉 训练结束，已将当前模型保存到 {os.path.join(os.getcwd(), path)}')
+            train_pipe_line.save_model(
+                f'last_policy_value_net_{t}.pth', 'train_losses', 'games')
 
-            # 保存数据
-            with open('log/train_losses.json', 'w', encoding='utf-8') as f:
-                json.dump(train_pipe_line.train_losses, f)
-            if train_pipe_line.is_save_game:
-                with open('log/games.json', 'w', encoding='utf-8') as f:
-                    json.dump(train_pipe_line.games, f)
     return wrapper
 
 
@@ -129,7 +119,7 @@ class TrainModel:
         self.device = torch.device(
             'cuda:0' if is_use_gpu and cuda.is_available() else 'cpu')
         self.chess_board = ChessBoard(board_len, n_feature_planes)
-        # 实例化策略-价值网络和蒙特卡洛搜索树
+        # 创建策略-价值网络和蒙特卡洛搜索树
         self.policy_value_net = self.__get_policy_value_net()
         self.mcts = AlphaZeroMCTS(
             self.policy_value_net, c_puct=c_puct, n_iters=n_mcts_iters, is_self_play=True)
@@ -139,7 +129,7 @@ class TrainModel:
         self.criterion = PolicyValueLoss()
         self.lr_scheduler = MultiStepLR(
             self.optimizer, [1500, 2500], gamma=0.1)
-        # 实例化数据集
+        # 创建数据集
         self.dataset = SelfPlayDataSet(board_len)
         # 记录数据
         self.train_losses = self.__load_data('log/train_losses.json')
@@ -193,7 +183,7 @@ class TrainModel:
             pi_list=pi_list, z_list=z_list, feature_planes_list=feature_planes_list)
         return self_play_data
 
-    @save_model
+    @exception_handler
     def train(self):
         """ 训练模型 """
         for i in range(self.n_self_plays):
@@ -277,7 +267,38 @@ class TrainModel:
             print(f'🥇 保存当前模型为最优模型，当前模型胜率为：{win_prob:.1%}\n')
         else:
             print(f'🎃 保持历史最优模型不变，当前模型胜率为：{win_prob:.1%}\n')
+
         self.mcts.set_self_play(True)
+
+    def save_model(self, model_name: str, loss_name: str, game_name: str):
+        """ 保存模型
+
+        Parameters
+        ----------
+        model_name: str
+            模型文件名称，不包含后缀
+
+        loss_name: str
+            损失文件名称，不包含后缀
+
+        game_name: str
+            自对弈棋谱名称，不包含后缀
+        """
+        os.makedirs('model', exist_ok=True)
+
+        path = f'model/{model_name}.pth'
+        self.policy_value_net.eval()
+        torch.save(self.policy_value_net, path)
+        print(f'🎉 已将当前模型保存到 {os.path.join(os.getcwd(), path)}')
+
+        # 保存数据
+        with open(f'log/{loss_name}.json', 'w', encoding='utf-8') as f:
+            json.dump(self.train_losses, f)
+
+        if self.is_save_game:
+            with open(f'log/{game_name}.json', 'w', encoding='utf-8') as f:
+                json.dump(self.games, f)
+
 
     def __do_mcts_action(self, mcts):
         """ 获取动作 """
@@ -289,7 +310,7 @@ class TrainModel:
     def __get_policy_value_net(self):
         """ 创建策略-价值网络，如果存在历史最优模型则直接载入最优模型 """
         os.makedirs('model', exist_ok=True)
-        
+
         best_model = 'best_policy_value_net.pth'
         history_models = sorted(
             [i for i in os.listdir('model') if i.startswith('last')])
@@ -304,6 +325,7 @@ class TrainModel:
         else:
             net = PolicyValueNet(n_feature_planes=self.chess_board.n_feature_planes,
                                  is_use_gpu=self.is_use_gpu).to(self.device)
+
         return net
 
     def __load_data(self, path: str):
@@ -314,4 +336,5 @@ class TrainModel:
                 data = json.load(f)
         except:
             os.makedirs('log', exist_ok=True)
+
         return data
