@@ -1,5 +1,4 @@
 # coding:utf-8
-
 from ctypes import POINTER, cast
 from ctypes.wintypes import MSG
 
