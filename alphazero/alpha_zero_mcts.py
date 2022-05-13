@@ -72,6 +72,7 @@ class AlphaZeroMCTS:
                 value = 1 if winner == board.current_player else -1
             else:
                 value = 0
+
             # 反向传播
             node.backup(-value)
 

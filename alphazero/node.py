@@ -68,6 +68,7 @@ class Node:
         """ 反向传播 """
         if self.parent:
             self.parent.backup(-value)
+
         self.__update(value)
 
     def get_score(self):

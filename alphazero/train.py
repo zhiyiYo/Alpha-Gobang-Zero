@@ -119,18 +119,22 @@ class TrainModel:
         self.device = torch.device(
             'cuda:0' if is_use_gpu and cuda.is_available() else 'cpu')
         self.chess_board = ChessBoard(board_len, n_feature_planes)
+
         # 创建策略-价值网络和蒙特卡洛搜索树
-        self.policy_value_net = self.__get_policy_value_net(board_len=board_len)
+        self.policy_value_net = self.__get_policy_value_net(board_len)
         self.mcts = AlphaZeroMCTS(
             self.policy_value_net, c_puct=c_puct, n_iters=n_mcts_iters, is_self_play=True)
+
         # 创建优化器和损失函数
         self.optimizer = optim.Adam(
             self.policy_value_net.parameters(), lr=lr, weight_decay=1e-4)
         self.criterion = PolicyValueLoss()
         self.lr_scheduler = MultiStepLR(
             self.optimizer, [1500, 2500], gamma=0.1)
+
         # 创建数据集
         self.dataset = SelfPlayDataSet(board_len)
+
         # 记录数据
         self.train_losses = self.__load_data('log/train_losses.json')
         self.games = self.__load_data('log/games.json')
@@ -307,7 +311,7 @@ class TrainModel:
         is_over, winner = self.chess_board.is_game_over()
         return is_over, winner
 
-    def __get_policy_value_net(self, board_len=9)
+    def __get_policy_value_net(self, board_len=9):
         """ 创建策略-价值网络，如果存在历史最优模型则直接载入最优模型 """
         os.makedirs('model', exist_ok=True)
 
