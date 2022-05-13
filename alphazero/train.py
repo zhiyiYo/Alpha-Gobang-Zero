@@ -120,7 +120,7 @@ class TrainModel:
             'cuda:0' if is_use_gpu and cuda.is_available() else 'cpu')
         self.chess_board = ChessBoard(board_len, n_feature_planes)
         # 创建策略-价值网络和蒙特卡洛搜索树
-        self.policy_value_net = self.__get_policy_value_net()
+        self.policy_value_net = self.__get_policy_value_net(board_len=board_len)
         self.mcts = AlphaZeroMCTS(
             self.policy_value_net, c_puct=c_puct, n_iters=n_mcts_iters, is_self_play=True)
         # 创建优化器和损失函数
@@ -307,7 +307,7 @@ class TrainModel:
         is_over, winner = self.chess_board.is_game_over()
         return is_over, winner
 
-    def __get_policy_value_net(self):
+    def __get_policy_value_net(self, board_len=9)
         """ 创建策略-价值网络，如果存在历史最优模型则直接载入最优模型 """
         os.makedirs('model', exist_ok=True)
 
@@ -324,7 +324,7 @@ class TrainModel:
             net.set_device(self.is_use_gpu)
         else:
             net = PolicyValueNet(n_feature_planes=self.chess_board.n_feature_planes,
-                                 is_use_gpu=self.is_use_gpu).to(self.device)
+                                 is_use_gpu=self.is_use_gpu, board_len=board_len).to(self.device)
 
         return net
 
