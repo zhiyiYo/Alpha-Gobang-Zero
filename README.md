@@ -23,11 +23,11 @@
   </a>
 
   <a style="text-decoration:none">
-    <img src="https://img.shields.io/badge/PyQt-5.13.2-blue?color=00B16A" alt="PyQt 5.13.2"/>
+    <img src="https://img.shields.io/badge/PyQt-5.15.2-blue?color=00B16A" alt="PyQt 5.15.2"/>
   </a>
 
   <a style="text-decoration:none">
-    <img src="https://img.shields.io/badge/OS-Windows%2010-blue?color=00B16A" alt="OS Window10"/>
+    <img src="https://img.shields.io/badge/OS-Win%2010%20|%20Win%2011-blue?color=00B16A" alt="OS Win10 | Win 11"/>
   </a>
 </p>
 

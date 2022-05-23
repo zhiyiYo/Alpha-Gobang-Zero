@@ -1,10 +1,10 @@
 # coding: utf-8
 from app.common import resource
-from app.components.framelesswindow import FramelessWindow
-from app.components.widgets.pop_up_ani_stacked_widget import PopUpAniStackedWidget
-from PyQt5.QtCore import Qt
+from app.common.os_utils import getWindowsVersion
+from app.components.framelesswindow import AcrylicWindow
+from app.components.widgets.pop_up_ani_stacked_widget import \
+    PopUpAniStackedWidget
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWinExtras import QtWin
 from PyQt5.QtWidgets import QApplication, qApp
 
 from .chess_board_interface import ChessBoardInterface
@@ -12,7 +12,7 @@ from .navigation_interface import NavigationInterface
 from .setting_interface import SettingInterface
 
 
-class MainWindow(FramelessWindow):
+class MainWindow(AcrylicWindow):
     """ 主界面 """
 
     def __init__(self, board_len=9):
@@ -23,20 +23,13 @@ class MainWindow(FramelessWindow):
         self.chessBoardInterface = ChessBoardInterface(
             boardLen=board_len, **self.settingInterface.config)
         self.stackedWidget = PopUpAniStackedWidget(self)
-        # 初始化
         self.initWidget()
 
     def initWidget(self):
         """ 初始化界面 """
-        self.resize(750, 850)
-        self.setMinimumSize(700, 790)
         self.setObjectName("mainWindow")
-        self.setWindowTitle('Alpha Gobang Zero')
-        self.setWindowIcon(QIcon(':/images/icon/二哈.png'))
-        QtWin.enableBlurBehindWindow(self)
-        self.setWindowFlags(Qt.FramelessWindowHint |
-                            Qt.WindowMinMaxButtonsHint)
-        self.windowEffect.addWindowAnimation(self.winId())
+        self.initWindow()
+
         self.navigationInterface.move(0, 40)
         self.stackedWidget.resize(750, 760)
         self.stackedWidget.move(0, 90)
@@ -47,16 +40,21 @@ class MainWindow(FramelessWindow):
         self.stackedWidget.addWidget(
             self.settingInterface, 0, 120, isNeedOpacityAni=False)
 
-        # 在去除任务栏的显示区域居中显示
-        desktop = QApplication.desktop().availableGeometry()
-        self.move(
-            int(desktop.width() / 2 - self.width() / 2),
-            int(desktop.height() / 2 - self.height() / 2),
-        )
-        # 信号连接到槽
         self.connectSignalToSlot()
-        # 设置窗口特效
         self.setWindowEffect(self.settingInterface.config["is_enable_acrylic"])
+
+    def initWindow(self):
+        self.resize(750, 850)
+        self.setMinimumSize(700, 790)
+
+        self.setWindowTitle('Alpha Gobang Zero')
+        self.setWindowIcon(QIcon(':/images/icon/二哈.png'))
+
+        desktop = QApplication.desktop().availableGeometry()
+        w, h = desktop.width(), desktop.height()
+        self.move(w//2 - self.width()//2, h//2 - self.height()//2)
+        self.show()
+        QApplication.processEvents()
 
     def connectSignalToSlot(self):
         """ 信号连接到槽 """
@@ -109,12 +107,15 @@ class MainWindow(FramelessWindow):
         self.chessBoardInterface.move(
             (self.width()-self.chessBoardInterface.width())//2,
             (self.height()-self.chessBoardInterface.height())//2-45)
+        self.chessBoardInterface.update()
 
     def setWindowEffect(self, isEnableAcrylic: bool):
         """ 设置窗口特效 """
         if isEnableAcrylic:
             self.windowEffect.setAcrylicEffect(self.winId(), "F2F2F2F2", True)
             self.setStyleSheet("#mainWindow{background:transparent}")
+            if getWindowsVersion() != 10:
+                self.windowEffect.addShadowEffect(self.winId())
         else:
             self.setStyleSheet("#mainWindow{background:#F0F0F0}")
             self.windowEffect.addShadowEffect(self.winId())

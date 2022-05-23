@@ -12,3 +12,64 @@ QLabel {
     font: 15px 'Segoe UI Semilight', 'Microsoft YaHei Light';
     color: black;
 }
+
+#minButton {
+    border-image: url(:/images/title_bar/最小化按钮_normal_57_40.png)
+}
+
+#minButton:hover {
+    border-image: url(:/images/title_bar/最小化按钮_hover_57_40.png)
+}
+
+#minButton:pressed {
+    border-image: url(:/images/title_bar/最小化按钮_pressed_57_40.png)
+}
+
+#closeButton {
+    border-image: url(:/images/title_bar/关闭按钮_normal_57_40.png)
+}
+
+#closeButton:hover {
+    border-image: url(:/images/title_bar/关闭按钮_hover_57_40.png)
+}
+
+#closeButton:pressed {
+    border-image: url(:/images/title_bar/关闭按钮_pressed_57_40.png)
+}
+
+#maxButton {
+    border-image: url(:/images/title_bar/最小化按钮_normal_57_40.png)
+}
+
+#maxButton:hover {
+    border-image: url(:/images/title_bar/最小化按钮_hover_57_40.png)
+}
+
+#maxButton:pressed {
+    border-image: url(:/images/title_bar/最小化按钮_pressed_57_40.png)
+}
+
+
+#maxButton[isMax=false] {
+    border-image: url(:/images/title_bar/最大化按钮_normal_57_40.png)
+}
+
+#maxButton[isMax=false]:hover {
+    border-image: url(:/images/title_bar/最大化按钮_hover_57_40.png)
+}
+
+#maxButton[isMax=false]:pressed {
+    border-image: url(:/images/title_bar/最大化按钮_pressed_57_40.png)
+}
+
+#maxButton[isMax=true] {
+    border-image: url(:/images/title_bar/向下还原按钮_normal_57_40.png)
+}
+
+#maxButton[isMax=true]:hover {
+    border-image: url(:/images/title_bar/向下还原按钮_hover_57_40.png)
+}
+
+#maxButton[isMax=true]:pressed {
+    border-image: url(:/images/title_bar/向下还原按钮_pressed_57_40.png)
+}

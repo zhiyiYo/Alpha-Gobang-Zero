@@ -112,9 +112,9 @@ class StateTooltip(QWidget):
     def paintEvent(self, e):
         """ 绘制背景 """
         super().paintEvent(e)
-        # 绘制旋转箭头
         painter = QPainter(self)
-        painter.setRenderHints(QPainter.SmoothPixmapTransform)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.SmoothPixmapTransform)
         painter.setPen(Qt.NoPen)
         if not self.isDone:
             painter.translate(24, 23)  # 原点平移到旋转中心

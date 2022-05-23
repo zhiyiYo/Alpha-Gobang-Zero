@@ -92,7 +92,8 @@ class WindowEffect:
         self.accentPolicy.AccentFlags = accentFlags
         self.accentPolicy.AnimationId = animationId
         # 开启亚克力
-        self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
+        self.SetWindowCompositionAttribute(
+            int(hWnd), pointer(self.winCompAttrData))
 
     def setAeroEffect(self, hWnd):
         """ 给窗口开启Aero效果
@@ -104,12 +105,14 @@ class WindowEffect:
         """
         self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_ENABLE_BLURBEHIND.value[0]
         # 开启Aero
-        self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
+        self.SetWindowCompositionAttribute(
+            int(hWnd), pointer(self.winCompAttrData))
 
     def removeBackgroundEffect(self, hWnd):
         """ 移除背景特效效果 """
         self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_DISABLED.value[0]
-        self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
+        self.SetWindowCompositionAttribute(
+            int(hWnd), pointer(self.winCompAttrData))
 
     @staticmethod
     def moveWindow(hWnd):
@@ -122,7 +125,8 @@ class WindowEffect:
         """
         win32gui.ReleaseCapture()
         win32api.SendMessage(
-            hWnd, win32con.WM_SYSCOMMAND, win32con.SC_MOVE + win32con.HTCAPTION, 0
+            int(hWnd), win32con.WM_SYSCOMMAND, win32con.SC_MOVE +
+            win32con.HTCAPTION, 0
         )
 
     def addShadowEffect(self, hWnd):
@@ -152,6 +156,7 @@ class WindowEffect:
         hWnd : int or `sip.voidptr`
             窗口句柄
         """
+        hWnd = int(hWnd)
         style = win32gui.GetWindowLong(hWnd, win32con.GWL_STYLE)
         win32gui.SetWindowLong(
             hWnd,

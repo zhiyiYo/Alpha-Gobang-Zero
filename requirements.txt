@@ -1,4 +1,4 @@
 numpy==1.19.5
-PyQt5==5.13.2
+PyQt5==5.15.2
 PyQt5-sip==12.8.1
 pywin32==227

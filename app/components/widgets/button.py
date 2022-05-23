@@ -1,47 +1,42 @@
 # coding:utf-8
+from app.common.icon import Icon
 from PyQt5.QtCore import QFile, QSize, Qt
-from PyQt5.QtGui import QBrush, QColor, QFont, QIcon, QPainter, QPen, QPixmap
+from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import QPushButton, QToolButton
 
 
 class ThreeStateToolButton(QToolButton):
-    """ 三种状态对应三种图标的按钮，iconPath_dict提供按钮normal、hover、pressed三种状态下的图标地址 """
 
-    def __init__(self, iconPath_dict: dict, icon_size: tuple = (50, 50), parent=None):
+    def __init__(self, iconPaths: dict, icon_size: tuple = (50, 50), parent=None):
         super().__init__(parent)
-        # 引用图标地址字典
-        self.iconPath_dict = iconPath_dict
+        self.iconPaths = iconPaths
         self.resize(*icon_size)
-        # 初始化小部件
         self.initWidget()
 
     def initWidget(self):
         """ 初始化小部件 """
         self.setCursor(Qt.ArrowCursor)
-        self.setIcon(QIcon(self.iconPath_dict['normal']))
+        self.setIcon(Icon(self.iconPaths['normal']))
         self.setIconSize(QSize(self.width(), self.height()))
         self.setStyleSheet('border: none; margin: 0px')
 
     def enterEvent(self, e):
-        """ hover时更换图标 """
-        self.setIcon(QIcon(self.iconPath_dict['hover']))
+        self.setIcon(Icon(self.iconPaths['hover']))
 
     def leaveEvent(self, e):
-        """ leave时更换图标 """
-        self.setIcon(QIcon(self.iconPath_dict['normal']))
+        self.setIcon(Icon(self.iconPaths['normal']))
 
     def mousePressEvent(self, e):
-        """ 鼠标左键按下时更换图标 """
         if e.button() == Qt.RightButton:
             return
-        self.setIcon(QIcon(self.iconPath_dict['pressed']))
+        self.setIcon(Icon(self.iconPaths['pressed']))
         super().mousePressEvent(e)
 
     def mouseReleaseEvent(self, e):
-        """ 鼠标左键按下时更换图标 """
         if e.button() == Qt.RightButton:
             return
-        self.setIcon(QIcon(self.iconPath_dict['normal']))
+
+        self.setIcon(Icon(self.iconPaths['normal']))
         super().mouseReleaseEvent(e)
 
 
@@ -80,7 +75,11 @@ class NavigationButton(QPushButton):
         """ 绘制按钮 """
         super().paintEvent(e)
         painter = QPainter(self)
-        painter.setRenderHints(QPainter.Antialiasing)
+        painter.setRenderHints(
+            QPainter.Antialiasing |
+            QPainter.SmoothPixmapTransform |
+            QPainter.TextAntialiasing
+        )
         painter.setPen(Qt.NoPen)
 
         # 绘制图标
@@ -90,6 +89,7 @@ class NavigationButton(QPushButton):
         painter.setPen(QPen(Qt.black))
         painter.setFont(self.font())
         painter.drawText(50, 15 + 16, self.__text)
+
         # 绘制选中标志
         if self.__isSelected:
             painter.setPen(Qt.NoPen)

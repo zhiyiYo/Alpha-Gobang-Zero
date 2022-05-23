@@ -282,8 +282,8 @@ class ModelCard(FoldingWindow):
         super().paintEvent(e)
         painter = QPainter(self)
         painter.setRenderHints(
-            QPainter.TextAntialiasing | QPainter.SmoothPixmapTransform
-        )
+            QPainter.Antialiasing | QPainter.TextAntialiasing | QPainter.SmoothPixmapTransform)
+
         # 绘制文字
         if self.pressedPos in ["left-top", "top", "right-bottom"]:
             # 左右扭曲字体
@@ -296,6 +296,7 @@ class ModelCard(FoldingWindow):
             self.paintText(painter, 12, 10, 12, 9)
         else:
             self.paintText(painter, 12, 11, 12, 10)
+
         # 绘制叉号
         if self.pressedPos in ["left", "left-top", "left-bottom", "top", None]:
             painter.drawPixmap(
@@ -341,6 +342,8 @@ class AddModelCard(FoldingWindow):
         """ 绘制背景 """
         super().paintEvent(e)
         painter = QPainter(self)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.SmoothPixmapTransform)
         if not self.pressedPos:
             painter.drawPixmap(
                 int(self.width() / 2 - self.image.width() / 2),

@@ -1,4 +1,5 @@
 # coding:utf-8
+from app.common.icon import Icon
 from app.common.windoweffect import WindowEffect
 from app.components.widgets.button import NavigationButton
 from PyQt5.QtCore import (QEasingCurve, QFile, QPoint, QPropertyAnimation,
@@ -27,7 +28,7 @@ class NavigationInterface(QWidget):
         self.navigationMenu.move(self.mapToGlobal(QPoint(0, 0)))
         self.navigationButton.setFixedSize(50, 50)
         self.navigationButton.setIcon(
-            QIcon(':images/navigation_menu/显示导航菜单.png'))
+            Icon(':images/navigation_menu/显示导航菜单.png'))
         # 设置层叠样式
         self.__setQss()
         # 信号连接到槽
@@ -112,7 +113,7 @@ class NavigationMenu(QWidget):
         self.settingButton.move(0, self.height()-60)
         self.navigationButton.setFixedSize(50, 50)
         self.navigationButton.setIcon(
-            QIcon(':images/navigation_menu/显示导航菜单.png'))
+            Icon(':images/navigation_menu/显示导航菜单.png'))
 
     def aniShow(self):
         """ 动画显示 """

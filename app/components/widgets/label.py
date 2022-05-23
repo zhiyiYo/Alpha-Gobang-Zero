@@ -1,14 +1,12 @@
 # coding:utf-8
-
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QMouseEvent, QPixmap
+from PyQt5.QtGui import QMouseEvent, QPixmap, QPainter
 from PyQt5.QtWidgets import QLabel
 
 
 class ClickableLabel(QLabel):
-    """ 定义可发出点击信号的Label """
+    """ Clickable label """
 
-    # 创建点击信号
     clicked = pyqtSignal()
 
     def __init__(self, text="", parent=None, isSendEventToParent: bool = True):
@@ -16,7 +14,6 @@ class ClickableLabel(QLabel):
         self.isSendEventToParent = isSendEventToParent
 
     def mousePressEvent(self, e):
-        """ 处理鼠标点击 """
         if self.isSendEventToParent:
             super().mousePressEvent(e)
 
@@ -28,10 +25,28 @@ class ClickableLabel(QLabel):
             self.clicked.emit()
 
 
-class ErrorIcon(QLabel):
+
+class PixmapLabel(QLabel):
+    """ Label for high dpi pixmap """
+
     def __init__(self, parent=None):
         super().__init__(parent)
-        # 设置提示条
-        self.customToolTip = None
-        self.setPixmap(QPixmap("app\\resource\\images\\empty_lineEdit_error.png"))
-        self.setFixedSize(21, 21)
+        self.__pixmap = QPixmap()
+
+    def setPixmap(self, pixmap: QPixmap):
+        self.__pixmap = pixmap
+        self.setFixedSize(pixmap.size())
+        self.update()
+
+    def pixmap(self):
+        return self.__pixmap
+
+    def paintEvent(self, e):
+        if self.__pixmap.isNull():
+            return
+
+        painter = QPainter(self)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.SmoothPixmapTransform)
+        painter.setPen(Qt.NoPen)
+        painter.drawPixmap(self.rect(), self.__pixmap)

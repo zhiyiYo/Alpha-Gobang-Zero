@@ -1,9 +1,8 @@
 # coding:utf-8
-
+from app.common.icon import Icon
 from app.common.windoweffect import WindowEffect
 from PyQt5.QtCore import (QEasingCurve, QEvent, QFile, QPropertyAnimation,
                           QRect, Qt)
-from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
 
@@ -16,9 +15,9 @@ class ChessBoardMenu(QMenu):
         self.animation = QPropertyAnimation(self, b'geometry')
         # 创建动作
         self.restartGameAct = QAction(
-            QIcon(':/images/chess_board_interface/重新开始.png'), self.tr('Restart'), self)
+            Icon(':/images/chess_board_interface/重新开始.png'), self.tr('Restart'), self)
         self.settingAct = QAction(
-            QIcon(':/images/chess_board_interface/设置.png'), self.tr('Settings'), self)
+            Icon(':/images/chess_board_interface/设置.png'), self.tr('Settings'), self)
         self.action_list = [self.restartGameAct, self.settingAct]
         self.addActions(self.action_list)
         self.__initWidget()
